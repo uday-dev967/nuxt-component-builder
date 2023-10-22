@@ -5,40 +5,44 @@
 				<v-text-field
 					v-if="field.type === 'text'"
 					v-model="localFormData[field.key]"
-					:label="field.label"
+					:label="getLabel(field)"
 					:placeholder="field.placeholder"
 					:rules="getTextFieldRules(field)"
-					:cols="field.col ? field.col : col"
-					inline
+					:cols="getColSize(field)"
+					:disabled="field.disable || false"
+					@change="applyDependency(field)"
 				></v-text-field>
 
 				<v-text-field
 					v-else-if="field.type === 'password'"
 					v-model="localFormData[field.key]"
-					:label="field.label"
+					:label="getLabel(field)"
 					:placeholder="field.placeholder"
 					:append-icon="showPasswordIcon ? (showPassword ? 'mdi-eye' : 'mdi-eye-off') : ''"
 					:type="showPassword ? 'text' : 'password'"
-					:cols="field.col ? field.col : col"
+					:cols="getColSize(field)"
 					:rules="getPasswordFieldRules(field)"
-					inline
+					:disabled="field.disable || false"
+					@change="applyDependency(field)"
 					@click:append="togglePasswordVisibility"
 				></v-text-field>
 				<v-checkbox
 					v-else-if="field.type === 'checkbox'"
 					v-model="localFormData[field.key]"
-					:label="field.label"
+					:label="getLabel(field)"
 					:rules="getCheckboxRules(field)"
-					:cols="field.col ? field.col : col"
-					inline
+					:cols="getColSize(field)"
+					:disabled="field.disable || false"
+					@change="applyDependency(field)"
 				></v-checkbox>
 
 				<v-radio-group
 					v-else-if="field.type === 'radio'"
 					v-model="localFormData[field.key]"
 					:rules="getRadioRules(field)"
-					:cols="field.col ? field.col : col"
-					inline
+					:cols="getColSize(field)"
+					:disabled="field.disable || false"
+					@change="applyDependency(field)"
 				>
 					<v-radio
 						v-for="(option, optionIndex) in field.options"
@@ -51,31 +55,39 @@
 					v-else-if="field.type === 'select'"
 					v-model="localFormData[field.key]"
 					:items="field.options"
-					:label="field.label"
+					:label="getLabel(field)"
 					:rules="getSelectRules(field)"
-					:cols="field.col ? field.col : col"
+					:cols="getColSize(field)"
+					:disabled="field.disable || false"
+					@change="applyDependency(field)"
 				></v-select>
-				<v-date-picker
-					v-else-if="field.type === 'date'"
-					v-model="localFormData[field.key]"
-					:label="field.label"
-					:placeholder="field.placeholder"
-					:rules="getDateRules(field)"
-					:min="field.min && field.min"
-					:max="field.max && field.max"
-					:cols="field.col ? field.col : col"
-					:multiple="field.multiple"
-				></v-date-picker>
-				<v-row v-else-if="field.type === 'multipleDate'">
+				<div v-else-if="field.type === 'date'">
+					<label>{{ getLabel(field) }}</label>
 					<v-date-picker
 						v-model="localFormData[field.key]"
-						:label="field.label"
+						:label="getLabel(field)"
 						:placeholder="field.placeholder"
 						:rules="getDateRules(field)"
 						:min="field.min && field.min"
 						:max="field.max && field.max"
-						:cols="field.col ? field.col : col"
+						:cols="getColSize(field)"
 						:multiple="field.multiple"
+						:disabled="field.disable || false"
+						@change="applyDependency(field)"
+					></v-date-picker>
+				</div>
+				<v-row v-else-if="field.type === 'multipleDate'">
+					<v-date-picker
+						v-model="localFormData[field.key]"
+						:label="getLabel(field)"
+						:placeholder="field.placeholder"
+						:rules="getDateRules(field)"
+						:min="field.min && field.min"
+						:max="field.max && field.max"
+						:cols="getColSize(field)"
+						:multiple="field.multiple"
+						:disabled="field.disable || false"
+						@change="applyDependency(field)"
 					></v-date-picker>
 					<v-menu
 						:ref="field.ref ? field.ref : `${field.key}Multipicker`"
@@ -119,23 +131,45 @@
 				<v-combobox
 					v-else-if="field.type === 'combobox'"
 					v-model="localFormData[field.key]"
-					:label="field.label ? field.label : `Select your ${field.key}`"
+					:label="getLabel(field)"
 					:items="field.items"
 					:multiple="field.multiple"
 					:rules="getComboboxRules(field)"
-					item-text="name"
+					:disabled="field.disable || false"
+					item-text="value"
 					item-value="id"
+					@change="applyDependency(field)"
 				>
 				</v-combobox>
 				<v-autocomplete
 					v-else-if="field.type === 'autocomplete'"
 					v-model="localFormData[field.key]"
-					:label="field.label ? field.label : `Select your ${field.key}`"
+					:label="getLabel(field)"
 					:items="field.items"
 					:multiple="field.multiple"
 					:rules="getAutoCompleteRules(field)"
-					item-text="name"
+					:disabled="field.disable || false"
+					item-text="value"
 					item-value="id"
+					@change="applyDependency(field)"
+				></v-autocomplete>
+				<v-autocomplete
+					v-else-if="field.type === 'asyncAutocomplete'"
+					v-model="localFormData[field.key]"
+					:label="getLabel(field)"
+					:items="field.items ? field.items : []"
+					:loading="field.isLoading"
+					:cols="getColSize(field)"
+					:rules="getAutoCompleteRules(field)"
+					:disabled="field.disable || false"
+					:color="field.loadingColor || 'green'"
+					placeholder="Start typing to Search"
+					prepend-icon="mdi-database-search"
+					item-text="Description"
+					item-value="API"
+					return-object
+					@change="applyDependency(field)"
+					@update:search-input="search($event, field)"
 				></v-autocomplete>
 			</div>
 
@@ -165,13 +199,81 @@ export default {
 			localFormData: this.data,
 			requiredRule: (v) => !!v || "This field is required",
 			emailRules: [(v) => /.+@.+\..+/.test(v) || "Email must be valid"],
+			unitType: null,
+			unitTypeOptions: ["Metric", "Imperial"],
+			pipeSizes: [],
+			pipeSizeOptions: [],
+			unitTypeDisabled: false,
+			pipeSizeDisabled: true,
+			items: [],
+			descriptionLimit: 60,
+			entries: [],
+			isLoading: false,
+			model: null,
+			asyncvalue: "",
 		}
+	},
+	computed: {
+		getPipeSizeOptions() {
+			if (this.unitType === "Metric") {
+				return ["1", "2", "4"]
+			} else if (this.unitType === "Imperial") {
+				return ["1/8", "1/4", "1/2"]
+			}
+			return []
+		},
+		handleUnitTypeDisable() {
+			if (this.pipeSizes.length) return true
+			return false
+		},
+		handlePipeSizeDisabled() {
+			if (this.unitType === null) return true
+			return false
+		},
 	},
 	mounted() {
 		// eslint-disable-next-line no-console
 		console.log(this.data)
 	},
+
 	methods: {
+		getLabel(field) {
+			if (field.label) {
+				return field.label
+			} else if (field.type === "asyncAutocomplete") {
+				return "Auto complete"
+			} else if (field.type === "multiPleDate") return field.type
+		},
+		getColSize(field) {
+			return field.col ? field.col : this.col
+		},
+		applyDependency(field) {
+			if (field.dependencyStatus) {
+				field.dependency(this.config, this.data)
+			}
+		},
+		search(event, field) {
+			// eslint-disable-next-line no-console
+			console.log(event)
+			if (event !== null) {
+				field.isLoading = true
+				this.$nextTick(() => {
+					fetch(field.url)
+						.then((res) => res.json())
+						.then((res) => {
+							const { entries } = res
+							field.items = entries
+						})
+						.catch((err) => {
+							// eslint-disable-next-line no-console
+							console.log(err)
+						})
+						.finally(() => (field.isLoading = false))
+				})
+			}
+
+			// eslint-disable-next-line no-console
+		},
 		togglePasswordVisibility() {
 			this.showPassword = !this.showPassword
 		},
@@ -185,8 +287,10 @@ export default {
 				console.log("form is invalid")
 			}
 		},
-		addCustomRequredRules(field, rules = []) {
-			field.customRules?.length && rules.push(...field.customRules)
+		addCustomRequredRules(field) {
+			const rules = []
+			const customRules = field.rules ? field.rules.filter((rule) => typeof rule !== "string") : []
+			customRules.length > 0 && rules.push(...customRules)
 			return rules
 		},
 		getTextFieldRules(field) {
@@ -232,6 +336,12 @@ export default {
 			field.rules?.includes("required") && rules.push(this.requiredRule)
 			// Add any other date-specific validation rules if needed
 			return rules
+		},
+		handleUnitTypeChange() {
+			this.pipeSizeDisabled = false
+		},
+		handlePipeSizeChange() {
+			this.unitTypeDisabled = true
 		},
 	},
 }

@@ -29,7 +29,10 @@ export default {
 				birthdate: null,
 				favoriteDates: [],
 				vacationDates: [],
+				unitType: null,
+				pipeSizes: [],
 			},
+
 			config: {
 				ref: "registerFrom",
 				button: { action: "register" },
@@ -40,8 +43,8 @@ export default {
 						placeholder: "Enter your full name",
 						key: "fullName",
 						col: 12,
-						rules: ["required"],
-						customRules: [
+						rules: [
+							"required",
 							(v) => (v && v.length >= 4 && v.length <= 10) || "Text must be between 5 and 10 characters",
 						],
 					},
@@ -60,7 +63,6 @@ export default {
 						key: "password",
 						col: 12,
 						rules: ["required"],
-						customRules: [],
 					},
 					{
 						type: "checkbox",
@@ -68,7 +70,6 @@ export default {
 						key: "subscribe",
 						col: 6,
 						rules: ["required"],
-						customRules: [],
 					},
 					{
 						type: "radio",
@@ -77,7 +78,6 @@ export default {
 						key: "gender",
 						col: 6,
 						rules: ["required"],
-						customRules: [],
 					},
 					{
 						type: "select",
@@ -86,7 +86,6 @@ export default {
 						key: "country",
 						col: 12,
 						rules: ["required"],
-						customRules: [],
 					},
 					{
 						type: "date",
@@ -95,7 +94,6 @@ export default {
 						key: "birthdate",
 						col: 12,
 						rules: ["required"],
-						customRules: [],
 						min: "1900-01-01",
 						max: new Date().toISOString(),
 						multiple: false,
@@ -106,7 +104,6 @@ export default {
 						placeholder: "Select your joining date",
 						key: "startDate",
 						rules: ["required"],
-						customRules: [],
 						min: "2023-10-01",
 						max: "2023-10-30",
 						multiple: false,
@@ -119,7 +116,6 @@ export default {
 						ref: "favoriteDates",
 						col: 12,
 						rules: [],
-						customRules: [],
 						multiple: true, // Enable multiple date selection
 						multiPickerMenu: false,
 					},
@@ -131,7 +127,6 @@ export default {
 						ref: "vacationDates",
 						col: 12,
 						rules: [],
-						customRules: [],
 						multiple: true,
 						multiPickerMenu: false,
 					},
@@ -139,10 +134,10 @@ export default {
 						type: "combobox",
 						label: "Favourite Cities",
 						items: [
-							{ id: 1, name: "mumbai" },
-							{ id: 2, name: "hyderabad" },
-							{ id: 3, name: "banglore" },
-							{ id: 4, name: "kakinada" },
+							{ id: 1, value: "mumbai" },
+							{ id: 2, value: "hyderabad" },
+							{ id: 3, value: "banglore" },
+							{ id: 4, value: "kakinada" },
 						],
 						key: "favouriteCities",
 						multiple: true,
@@ -151,10 +146,10 @@ export default {
 						type: "combobox",
 						label: "Favourite sports",
 						items: [
-							{ id: 1, name: "cricket" },
-							{ id: 2, name: "football" },
-							{ id: 3, name: "boxing" },
-							{ id: 4, name: "basket ball" },
+							{ id: 1, value: "cricket" },
+							{ id: 2, value: "football" },
+							{ id: 3, value: "boxing" },
+							{ id: 4, value: "basket ball" },
 						],
 						key: "favouriteSports",
 						multiple: true,
@@ -163,10 +158,10 @@ export default {
 						type: "autocomplete",
 						label: "Favourite cars",
 						items: [
-							{ id: 1, name: "bmw" },
-							{ id: 2, name: "audi" },
-							{ id: 3, name: "mustang" },
-							{ id: 4, name: "benz" },
+							{ id: 1, value: "bmw" },
+							{ id: 2, value: "audi" },
+							{ id: 3, value: "mustang" },
+							{ id: 4, value: "benz" },
 						],
 						key: "favouriteCars",
 						multiple: true,
@@ -175,12 +170,69 @@ export default {
 						type: "autocomplete",
 						label: "Favourite food",
 						items: [
-							{ id: 1, name: "chiken" },
-							{ id: 2, name: "mutton" },
-							{ id: 3, name: "biriyani" },
-							{ id: 4, name: "sweets" },
+							{ id: 1, value: "chiken" },
+							{ id: 2, value: "mutton" },
+							{ id: 3, value: "biriyani" },
+							{ id: 4, value: "sweets" },
 						],
 						key: "favouritefoods",
+					},
+					{
+						type: "asyncAutocomplete",
+						label: "API Menu",
+						items: [],
+						url: "https://api.publicapis.org/entries",
+						key: "apiMenu",
+						isLoading: false,
+					},
+					{
+						type: "combobox",
+						label: "unit type",
+						items: [
+							{ id: 1, value: "imperial" },
+							{ id: 2, value: "metric" },
+						],
+						key: "unitType",
+						disable: false,
+						refField: "pipeSizes",
+						dependencyStatus: true,
+						dependency: function (configObj, formdata) {
+							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+							if (formdata[this.key] !== null) {
+								dependentObj.disable = false
+								dependentObj.items = dependentObj.itemsObj[formdata[this.key].value]
+							}
+						},
+					},
+					{
+						type: "combobox",
+						label: "pipe Sizes",
+						items: [],
+						itemsObj: {
+							metric: [
+								{ id: 1, value: "1" },
+								{ id: 2, value: "2" },
+								{ id: 3, value: "4" },
+							],
+							imperial: [
+								{ id: 1, value: "1/8" },
+								{ id: 2, value: "1/4" },
+								{ id: 3, value: "1/2" },
+							],
+						},
+						key: "pipeSizes",
+						multiple: true,
+						disable: true,
+						refField: "unitType",
+						dependencyStatus: true,
+						dependency: function (configObj, formdata) {
+							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+							if (formdata[this.key].length === 0) {
+								dependentObj.disable = false
+							} else {
+								dependentObj.disable = true
+							}
+						},
 					},
 				],
 			},
@@ -195,6 +247,10 @@ export default {
 		register(formData) {
 			// eslint-disable-next-line no-console
 			console.log("Register form submitted with data:", formData)
+			const { pipeSizes } = formData
+			const first = pipeSizes.find((each) => each.id === 1)
+			// eslint-disable-next-line no-console
+			console.log(first)
 			// Handle registration logic here
 		},
 	},
