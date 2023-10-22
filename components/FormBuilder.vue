@@ -1,177 +1,201 @@
 <template>
 	<v-form :ref="config.ref" @submit.prevent="submitForm">
 		<v-container>
-			<div v-for="(field, index) in config.fields" :key="index">
-				<v-text-field
-					v-if="field.type === 'text'"
-					v-model="localFormData[field.key]"
-					:label="getLabel(field)"
-					:placeholder="field.placeholder"
-					:rules="getTextFieldRules(field)"
-					:cols="getColSize(field)"
-					:disabled="field.disable || false"
-					@change="applyDependency(field)"
-				></v-text-field>
-
-				<v-text-field
-					v-else-if="field.type === 'password'"
-					v-model="localFormData[field.key]"
-					:label="getLabel(field)"
-					:placeholder="field.placeholder"
-					:append-icon="showPasswordIcon ? (showPassword ? 'mdi-eye' : 'mdi-eye-off') : ''"
-					:type="showPassword ? 'text' : 'password'"
-					:cols="getColSize(field)"
-					:rules="getPasswordFieldRules(field)"
-					:disabled="field.disable || false"
-					@change="applyDependency(field)"
-					@click:append="togglePasswordVisibility"
-				></v-text-field>
-				<v-checkbox
-					v-else-if="field.type === 'checkbox'"
-					v-model="localFormData[field.key]"
-					:label="getLabel(field)"
-					:rules="getCheckboxRules(field)"
-					:cols="getColSize(field)"
-					:disabled="field.disable || false"
-					@change="applyDependency(field)"
-				></v-checkbox>
-
-				<v-radio-group
-					v-else-if="field.type === 'radio'"
-					v-model="localFormData[field.key]"
-					:rules="getRadioRules(field)"
-					:cols="getColSize(field)"
-					:disabled="field.disable || false"
-					@change="applyDependency(field)"
-				>
-					<v-radio
-						v-for="(option, optionIndex) in field.options"
-						:key="optionIndex"
-						:label="option"
-						:value="option"
-					></v-radio>
-				</v-radio-group>
-				<v-select
-					v-else-if="field.type === 'select'"
-					v-model="localFormData[field.key]"
-					:items="field.options"
-					:label="getLabel(field)"
-					:rules="getSelectRules(field)"
-					:cols="getColSize(field)"
-					:disabled="field.disable || false"
-					@change="applyDependency(field)"
-				></v-select>
-				<div v-else-if="field.type === 'date'">
-					<label>{{ getLabel(field) }}</label>
-					<v-date-picker
+			<v-row justify="start" align="center">
+				<v-col v-for="(field, index) in config.fields" :key="index" cols="6">
+					<v-text-field
+						v-if="field.type === 'text'"
 						v-model="localFormData[field.key]"
 						:label="getLabel(field)"
 						:placeholder="field.placeholder"
-						:rules="getDateRules(field)"
-						:min="field.min && field.min"
-						:max="field.max && field.max"
+						:rules="getTextFieldRules(field)"
 						:cols="getColSize(field)"
-						:multiple="field.multiple"
 						:disabled="field.disable || false"
 						@change="applyDependency(field)"
-					></v-date-picker>
-				</div>
-				<v-row v-else-if="field.type === 'multipleDate'">
-					<v-date-picker
+					></v-text-field>
+					<v-textarea
+						v-if="field.type === 'textArea'"
+						v-model.lazy="localFormData[field.key]"
+						:label="getLabel(field)"
+						:placeholder="field.placeholder"
+						:rules="getTextFieldRules(field)"
+						:cols="getColSize(field)"
+						:disabled="field.disable || false"
+						solo
+						name="input-7-4"
+						@change="applyDependency(field)"
+					></v-textarea>
+					<v-text-field
+						v-else-if="field.type === 'password'"
 						v-model="localFormData[field.key]"
 						:label="getLabel(field)"
 						:placeholder="field.placeholder"
-						:rules="getDateRules(field)"
-						:min="field.min && field.min"
-						:max="field.max && field.max"
+						:append-icon="showPasswordIcon ? (showPassword ? 'mdi-eye' : 'mdi-eye-off') : ''"
+						:type="showPassword ? 'text' : 'password'"
 						:cols="getColSize(field)"
-						:multiple="field.multiple"
+						:rules="getPasswordFieldRules(field)"
 						:disabled="field.disable || false"
 						@change="applyDependency(field)"
-					></v-date-picker>
-					<v-menu
-						:ref="field.ref ? field.ref : `${field.key}Multipicker`"
-						v-model="field.multiDatePickerMenu"
-						:close-on-content-click="false"
-						:return-value.sync="localFormData[field.key]"
-						transition="scale-transition"
-						offset-y
-						min-width="auto"
+						@click:append="togglePasswordVisibility"
+					></v-text-field>
+					<v-checkbox
+						v-else-if="field.type === 'checkbox'"
+						v-model="localFormData[field.key]"
+						:label="getLabel(field)"
+						:rules="getCheckboxRules(field)"
+						:cols="getColSize(field)"
+						:disabled="field.disable || false"
+						@change="applyDependency(field)"
+					></v-checkbox>
+
+					<v-radio-group
+						v-else-if="field.type === 'radio'"
+						v-model="localFormData[field.key]"
+						:rules="getRadioRules(field)"
+						:cols="getColSize(field)"
+						:disabled="field.disable || false"
+						@change="applyDependency(field)"
 					>
-						<template #activator="{ on, attrs }">
-							<v-combobox
-								v-model="localFormData[field.key]"
-								multiple
-								chips
-								small-chips
-								:label="field.PickerLabel ? field.PickerLabel : `${field.key}Multipicker`"
-								prepend-icon="mdi-calendar"
-								readonly
-								v-bind="attrs"
-								v-on="on"
-							></v-combobox>
-						</template>
-						<v-date-picker v-model="localFormData[field.key]" multiple no-title scrollable>
-							<v-spacer></v-spacer>
-							<v-btn text color="primary" @click="field.multiDatePickerMenu = false"> Cancel </v-btn>
-							<v-btn
-								text
-								color="primary"
-								@click="
-									$refs[field.ref ? field.ref : `${field.key}Multipicker`][0].save(
-										localFormData[field.key]
-									)
-								"
-							>
-								OK
-							</v-btn>
-						</v-date-picker>
-					</v-menu>
-				</v-row>
-				<v-combobox
-					v-else-if="field.type === 'combobox'"
-					v-model="localFormData[field.key]"
-					:label="getLabel(field)"
-					:items="field.items"
-					:multiple="field.multiple"
-					:rules="getComboboxRules(field)"
-					:disabled="field.disable || false"
-					item-text="value"
-					item-value="id"
-					@change="applyDependency(field)"
-				>
-				</v-combobox>
-				<v-autocomplete
-					v-else-if="field.type === 'autocomplete'"
-					v-model="localFormData[field.key]"
-					:label="getLabel(field)"
-					:items="field.items"
-					:multiple="field.multiple"
-					:rules="getAutoCompleteRules(field)"
-					:disabled="field.disable || false"
-					item-text="value"
-					item-value="id"
-					@change="applyDependency(field)"
-				></v-autocomplete>
-				<v-autocomplete
-					v-else-if="field.type === 'asyncAutocomplete'"
-					v-model="localFormData[field.key]"
-					:label="getLabel(field)"
-					:items="field.items ? field.items : []"
-					:loading="field.isLoading"
-					:cols="getColSize(field)"
-					:rules="getAutoCompleteRules(field)"
-					:disabled="field.disable || false"
-					:color="field.loadingColor || 'green'"
-					placeholder="Start typing to Search"
-					prepend-icon="mdi-database-search"
-					item-text="Description"
-					item-value="API"
-					return-object
-					@change="applyDependency(field)"
-					@update:search-input="search($event, field)"
-				></v-autocomplete>
-			</div>
+						<v-radio
+							v-for="(option, optionIndex) in field.options"
+							:key="optionIndex"
+							:label="option"
+							:value="option"
+						></v-radio>
+					</v-radio-group>
+					<v-select
+						v-else-if="field.type === 'select'"
+						v-model="localFormData[field.key]"
+						:items="field.options"
+						:label="getLabel(field)"
+						:rules="getSelectRules(field)"
+						:cols="getColSize(field)"
+						:disabled="field.disable || false"
+						@change="applyDependency(field)"
+					></v-select>
+					<div v-else-if="field.type === 'date'">
+						<label>{{ getLabel(field) }}</label>
+						<v-date-picker
+							v-model="localFormData[field.key]"
+							:label="getLabel(field)"
+							:placeholder="field.placeholder"
+							:rules="getDateRules(field)"
+							:min="field.min && field.min"
+							:max="field.max && field.max"
+							:cols="getColSize(field)"
+							:multiple="field.multiple"
+							:disabled="field.disable || false"
+							@change="applyDependency(field)"
+						></v-date-picker>
+					</div>
+					<div v-else-if="field.type === 'multipleDate'">
+						<label>{{ getLabel(field) }}</label>
+						<v-date-picker
+							v-model="localFormData[field.key]"
+							:label="getLabel(field)"
+							:placeholder="field.placeholder"
+							:rules="getDateRules(field)"
+							:min="field.min && field.min"
+							:max="field.max && field.max"
+							:cols="getColSize(field)"
+							:multiple="field.multiple"
+							:disabled="field.disable || false"
+							@change="applyDependency(field)"
+						></v-date-picker>
+						<v-menu
+							:ref="field.ref ? field.ref : `${field.key}Multipicker`"
+							v-model="field.multiDatePickerMenu"
+							:close-on-content-click="false"
+							:return-value.sync="localFormData[field.key]"
+							transition="scale-transition"
+							offset-y
+							min-width="auto"
+						>
+							<template #activator="{ on, attrs }">
+								<v-combobox
+									v-model="localFormData[field.key]"
+									multiple
+									chips
+									small-chips
+									:label="field.PickerLabel ? field.PickerLabel : `${field.key}Multipicker`"
+									prepend-icon="mdi-calendar"
+									readonly
+									v-bind="attrs"
+									v-on="on"
+								></v-combobox>
+							</template>
+							<v-date-picker v-model="localFormData[field.key]" multiple no-title scrollable>
+								<v-spacer></v-spacer>
+								<v-btn text color="primary" @click="field.multiDatePickerMenu = false"> Cancel </v-btn>
+								<v-btn
+									text
+									color="primary"
+									@click="
+										$refs[field.ref ? field.ref : `${field.key}Multipicker`][0].save(
+											localFormData[field.key]
+										)
+									"
+								>
+									OK
+								</v-btn>
+							</v-date-picker>
+						</v-menu>
+					</div>
+					<v-combobox
+						v-else-if="field.type === 'combobox'"
+						v-model="localFormData[field.key]"
+						:label="getLabel(field)"
+						:items="field.items"
+						:multiple="field.multiple"
+						:rules="getComboboxRules(field)"
+						:disabled="field.disable || false"
+						item-text="value"
+						item-value="id"
+						@change="applyDependency(field)"
+					>
+					</v-combobox>
+					<v-autocomplete
+						v-else-if="field.type === 'autocomplete'"
+						v-model="localFormData[field.key]"
+						:label="getLabel(field)"
+						:items="field.items"
+						:multiple="field.multiple"
+						:rules="getAutoCompleteRules(field)"
+						:disabled="field.disable || false"
+						item-text="value"
+						item-value="id"
+						@change="applyDependency(field)"
+					></v-autocomplete>
+					<v-autocomplete
+						v-else-if="field.type === 'asyncAutocomplete'"
+						v-model="localFormData[field.key]"
+						:label="getLabel(field)"
+						:items="field.items ? field.items : []"
+						:loading="field.isLoading"
+						:cols="getColSize(field)"
+						:rules="getAutoCompleteRules(field)"
+						:disabled="field.disable || false"
+						:color="field.loadingColor || 'green'"
+						placeholder="Start typing to Search"
+						prepend-icon="mdi-database-search"
+						item-text="Description"
+						item-value="API"
+						return-object
+						@change="applyDependency(field)"
+						@update:search-input="search($event, field)"
+					></v-autocomplete>
+					<v-switch
+						v-else-if="field.type === 'switch'"
+						v-model="localFormData[field.key]"
+						:label="getLabel(field)"
+						:cols="getColSize(field)"
+						:rules="getAutoCompleteRules(field)"
+						:disabled="field.disable || false"
+						:color="field.switchColor || 'green'"
+						@change="applyDependency(field)"
+					></v-switch>
+				</v-col>
+			</v-row>
 
 			<v-btn type="submit" color="primary">{{ config.button.action }}</v-btn>
 		</v-container>
@@ -193,7 +217,7 @@ export default {
 	},
 	data() {
 		return {
-			col: 12,
+			col: 6,
 			showPassword: false,
 			showPasswordIcon: true,
 			localFormData: this.data,

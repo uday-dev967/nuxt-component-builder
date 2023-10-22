@@ -1,12 +1,8 @@
 <template>
-	<v-container class="mt-8">
-		<v-row>
-			<v-col cols="12" md="6">
-				<h2>Register Form</h2>
-				<dynamic-form :config="config" :data="formData" @form-submitted="register"></dynamic-form>
-			</v-col>
-		</v-row>
-	</v-container>
+	<div class="mt-8">
+		<h2>Register Form</h2>
+		<dynamic-form :config="config" :data="formData" @form-submitted="register"></dynamic-form>
+	</div>
 </template>
 
 <script>
@@ -133,6 +129,7 @@ export default {
 					{
 						type: "combobox",
 						label: "Favourite Cities",
+						refField: "isFavouritesCitiesEnable",
 						items: [
 							{ id: 1, value: "mumbai" },
 							{ id: 2, value: "hyderabad" },
@@ -141,6 +138,17 @@ export default {
 						],
 						key: "favouriteCities",
 						multiple: true,
+					},
+					{
+						type: "switch",
+						lable: "",
+						switchColor: "orange",
+						key: "isFavouritesCitiesEnable",
+						refField: "favouriteCities",
+						dependencyStatus: true,
+						dependency: (configObj, formdata) => {
+							this.dependecySwitchLock(configObj, formdata, "isFavouritesCitiesEnable")
+						},
 					},
 					{
 						type: "combobox",
@@ -152,7 +160,18 @@ export default {
 							{ id: 4, value: "basket ball" },
 						],
 						key: "favouriteSports",
+						refField: "isFavouriteSportsEnable",
 						multiple: true,
+					},
+					{
+						type: "switch",
+						lable: "",
+						key: "isFavouriteSportsEnable",
+						refField: "favouriteCities",
+						dependencyStatus: true,
+						dependency: (configObj, formdata) => {
+							this.dependecySwitchLock(configObj, formdata, "isFavouriteSportsEnable")
+						},
 					},
 					{
 						type: "autocomplete",
@@ -234,6 +253,13 @@ export default {
 							}
 						},
 					},
+					{
+						type: "textArea",
+						label: "Comment",
+						placeholder: "Speak your mind",
+						key: "comment",
+						rules: ["required", (v) => (v && v.length >= 20) || "Text must be atleast of 20 characters"],
+					},
 				],
 			},
 		}
@@ -252,6 +278,14 @@ export default {
 			// eslint-disable-next-line no-console
 			console.log(first)
 			// Handle registration logic here
+		},
+		dependecySwitchLock(configObj, formdata, key) {
+			const dependentObj = configObj.fields.find((field) => field.refField === key)
+			if (formdata[key]) {
+				dependentObj.disable = true
+			} else {
+				dependentObj.disable = false
+			}
 		},
 	},
 }
