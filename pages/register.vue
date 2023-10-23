@@ -6,6 +6,7 @@
 </template>
 
 <script>
+import axios from "axios"
 import DynamicForm from "~/components/FormBuilder.vue" // Adjust the path as needed
 
 export default {
@@ -203,6 +204,15 @@ export default {
 						url: "https://api.publicapis.org/entries",
 						key: "apiMenu",
 						isLoading: false,
+						apiCall: async function () {
+							try {
+								const response = await axios.get(this.url)
+								return response.data.entries
+							} catch (error) {
+								// eslint-disable-next-line no-console
+								console.error(error)
+							}
+						},
 					},
 					{
 						type: "combobox",

@@ -183,7 +183,8 @@
 						return-object
 						@change="applyDependency(field)"
 						@update:search-input="search($event, field)"
-					></v-autocomplete>
+						>{{ initalizeRefKey(field.key) }}</v-autocomplete
+					>
 					<v-switch
 						v-else-if="field.type === 'switch'"
 						v-model="localFormData[field.key]"
@@ -235,6 +236,7 @@ export default {
 			isLoading: false,
 			model: null,
 			asyncvalue: "",
+			refsKeyList: {},
 		}
 	},
 	computed: {
@@ -276,24 +278,27 @@ export default {
 				field.dependency(this.config, this.data)
 			}
 		},
+		initalizeRefKey(key) {
+			this.$set(this.refsKeyList, `refKey${key}`, null)
+		},
 		search(event, field) {
 			// eslint-disable-next-line no-console
 			console.log(event)
+			// eslint-disable-next-line no-console
+			console.log(this.refsKeyList[`refKey${field.key}`])
 			if (event !== null) {
-				field.isLoading = true
-				this.$nextTick(() => {
-					fetch(field.url)
-						.then((res) => res.json())
-						.then((res) => {
-							const { entries } = res
-							field.items = entries
-						})
-						.catch((err) => {
-							// eslint-disable-next-line no-console
-							console.log(err)
-						})
-						.finally(() => (field.isLoading = false))
-				})
+				if (this.refsKeyList[`refKey${field.key}`]) {
+					clearTimeout(this.refsKeyList[`refKey${field.key}`])
+					this.refsKeyList[`refKey${field.key}`] = null
+				}
+				this.refsKeyList[`refKey${field.key}`] = setTimeout(async () => {
+					field.isLoading = true
+					const apiData = await field.apiCall()
+					if (apiData) {
+						field.items = apiData
+						field.isLoading = false
+					}
+				}, 500)
 			}
 
 			// eslint-disable-next-line no-console
