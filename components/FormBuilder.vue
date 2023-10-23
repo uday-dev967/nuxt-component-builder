@@ -170,7 +170,7 @@
 						v-else-if="field.type === 'asyncAutocomplete'"
 						v-model="localFormData[field.key]"
 						:label="getLabel(field)"
-						:items="field.items ? field.items : []"
+						:items="asyncList[`asyncListKey${field.key}`]"
 						:loading="field.isLoading"
 						:cols="getColSize(field)"
 						:rules="getAutoCompleteRules(field)"
@@ -183,8 +183,7 @@
 						return-object
 						@change="applyDependency(field)"
 						@update:search-input="search($event, field)"
-						>{{ initalizeRefKey(field.key) }}</v-autocomplete
-					>
+					></v-autocomplete>
 					<v-switch
 						v-else-if="field.type === 'switch'"
 						v-model="localFormData[field.key]"
@@ -237,6 +236,7 @@ export default {
 			model: null,
 			asyncvalue: "",
 			refsKeyList: {},
+			asyncList: {},
 		}
 	},
 	computed: {
@@ -260,6 +260,13 @@ export default {
 	mounted() {
 		// eslint-disable-next-line no-console
 		console.log(this.data)
+		this.config.fields.forEach((field) => {
+			if (field.type === "asyncAuotcomplete") {
+				this.asyncList[field.key] = field.items || []
+				this.initalizeAsyncListKey(field)
+				this.initalizeRefKey(field.key)
+			}
+		})
 	},
 
 	methods: {
@@ -278,6 +285,10 @@ export default {
 				field.dependency(this.config, this.data)
 			}
 		},
+		initalizeAsyncListKey(field) {
+			const items = field.items || []
+			this.$set(this.asyncList, `asyncListKey${field.key}`, items)
+		},
 		initalizeRefKey(key) {
 			this.$set(this.refsKeyList, `refKey${key}`, null)
 		},
@@ -295,7 +306,7 @@ export default {
 					field.isLoading = true
 					const apiData = await field.apiCall()
 					if (apiData) {
-						field.items = apiData
+						this.asyncList[`asyncListKey${field.key}`] = apiData
 						field.isLoading = false
 					}
 				}, 500)

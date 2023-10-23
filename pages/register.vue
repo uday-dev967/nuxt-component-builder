@@ -215,6 +215,23 @@ export default {
 						},
 					},
 					{
+						type: "asyncAutocomplete",
+						label: "Fetch Menu",
+						items: [],
+						url: "https://api.publicapis.org/entries",
+						key: "fetchMenu",
+						isLoading: false,
+						apiCall: async function () {
+							try {
+								const response = await axios.get(this.url)
+								return response.data.entries
+							} catch (error) {
+								// eslint-disable-next-line no-console
+								console.error(error)
+							}
+						},
+					},
+					{
 						type: "combobox",
 						label: "unit type",
 						items: [
