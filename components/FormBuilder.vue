@@ -7,7 +7,20 @@
 						v-if="field.type === 'text'"
 						v-model="localFormData[field.key]"
 						:label="getLabel(field)"
+						:value="field.value || 'hai'"
 						:placeholder="field.placeholder"
+						:type="field.type || 'text'"
+						:rules="getTextFieldRules(field)"
+						:cols="getColSize(field)"
+						:disabled="field.disable || false"
+						@change="applyDependency(field)"
+					></v-text-field>
+					<v-text-field
+						v-if="field.type === 'number'"
+						v-model.number="localFormData[field.key]"
+						:label="getLabel(field)"
+						:placeholder="field.placeholder"
+						:type="field.type || 'number'"
 						:rules="getTextFieldRules(field)"
 						:cols="getColSize(field)"
 						:disabled="field.disable || false"
@@ -196,8 +209,18 @@
 					></v-switch>
 				</v-col>
 			</v-row>
-
-			<v-btn type="submit" color="primary">{{ config.button.action }}</v-btn>
+			<template v-for="(button, index) in config.buttons">
+				<v-btn v-if="button.type === 'submit'" :key="index" type="submit" color="primary">{{
+					button.action
+				}}</v-btn>
+				<v-btn
+					v-else-if="button.type === 'closeForm'"
+					:key="index"
+					color="primary"
+					@click="() => closeForm(button)"
+					>{{ button.action }}</v-btn
+				>
+			</template>
 		</v-container>
 	</v-form>
 </template>
@@ -270,6 +293,13 @@ export default {
 	},
 
 	methods: {
+		closeForm(button) {
+			const reset = () => {
+				this.$refs[this.config.ref].reset()
+			}
+
+			button.executeFunction(reset)
+		},
 		getLabel(field) {
 			if (field.label) {
 				return field.label
@@ -319,7 +349,10 @@ export default {
 		},
 		submitForm() {
 			if (this.$refs[this.config.ref].validate()) {
-				this.$emit("form-submitted", this.localFormData)
+				const reset = () => {
+					this.$refs[this.config.ref].reset()
+				}
+				this.$emit("form-submitted", this.localFormData, reset)
 				// eslint-disable-next-line no-console
 				console.log("form is valid", this.localFormData)
 			} else {

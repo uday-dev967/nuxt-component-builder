@@ -14,6 +14,11 @@
 					<v-icon>mdi-login</v-icon>
 				</v-btn>
 			</nuxt-link>
+			<nuxt-link to="/table">
+				<v-btn icon>
+					<v-icon>mdi-table</v-icon>
+				</v-btn>
+			</nuxt-link>
 			<v-spacer></v-spacer>
 		</v-app-bar>
 	</div>

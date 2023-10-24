@@ -1,11 +1,13 @@
 <template>
 	<v-app dark>
-		<nav-bar />
-		<v-main>
-			<v-container>
-				<Nuxt />
-			</v-container>
-		</v-main>
+		<client-only>
+			<nav-bar />
+			<v-main>
+				<v-container>
+					<Nuxt />
+				</v-container>
+			</v-main>
+		</client-only>
 	</v-app>
 </template>
 
