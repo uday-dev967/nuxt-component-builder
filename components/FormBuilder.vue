@@ -244,7 +244,8 @@ export default {
 			showPassword: false,
 			showPasswordIcon: true,
 			localFormData: this.data,
-			requiredRule: (v) => !!v || "This field is required",
+			requiredRule: (v) =>
+				typeof v === "number" ? !!v ?? "This field is required" : !!v || "This field is required",
 			emailRules: [(v) => /.+@.+\..+/.test(v) || "Email must be valid"],
 			unitType: null,
 			unitTypeOptions: ["Metric", "Imperial"],

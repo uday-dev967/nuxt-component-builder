@@ -4,11 +4,13 @@
 			v-model="localInputData.selected"
 			:headers="tableConfig.headers"
 			:items="tableConfig.tableData"
+			:page.sync="page"
 			item-key="id"
 			:items-per-page="localInputData.itemsPerPage || 10"
 			hide-default-footer
 			class="elevation-1"
 			show-select
+			@page-count="pageCount = $event"
 		>
 			<!-- <template #header.name="{ header }">
 				{{ header.text.toUpperCase() }}
@@ -40,7 +42,7 @@
 
 							<v-btn
 								v-else-if="field.type === 'button'"
-								:disabled="field.disable"
+								:disabled="localInputData.selected.length === 0"
 								:color="field.color"
 								small
 								class="mr-1"
@@ -55,7 +57,14 @@
 								max-width="500px"
 							>
 								<template #activator="{ on }">
-									<v-btn :disabled="field.disable" :color="field.color" small class="mr-1" v-on="on">
+									<v-btn
+										:disabled="field.disable"
+										:color="field.color"
+										small
+										class="mr-1"
+										v-on="on"
+										@click="() => buttonClickFunction(field)"
+									>
 										<v-icon left>{{ field.icon }}</v-icon>
 										{{ field.action }}
 									</v-btn>
@@ -72,11 +81,11 @@
 				<v-toolbar class="mt-4">
 					<v-row justify="center" align="center">
 						<v-col>
-							<p>showing entries appear here</p>
+							<p>showing entries {{ getEntries }}</p>
 						</v-col>
 						<v-spacer></v-spacer>
 						<v-col cols="5">
-							<v-pagination v-model="page" :length="pageCount" circle></v-pagination>
+							<v-pagination v-model="page" :length="getPageCount" circle></v-pagination>
 						</v-col>
 					</v-row>
 				</v-toolbar>
@@ -87,8 +96,12 @@
 						<v-icon v-bind="attrs" v-on="on"> mdi-dots-vertical </v-icon>
 					</template>
 					<v-list>
-						<v-list-item v-for="(action, index) in tableConfig.actions.items" :key="index">
-							<v-list-item-title @click="() => action.executeFunction(item)">
+						<v-list-item
+							v-for="(action, index) in tableConfig.actions.items"
+							:key="index"
+							@click="() => action.executeFunction(item)"
+						>
+							<v-list-item-title>
 								<v-icon small left>{{ action.icon }}</v-icon>
 								{{ action.title }}
 							</v-list-item-title>
@@ -116,12 +129,27 @@ export default {
 	data() {
 		return {
 			page: 1,
-			pageCount: 100,
+
 			searchInput: "",
 			col: 1,
 			localInputData: this.userInputData,
 			dialog: false,
 		}
+	},
+	computed: {
+		getPageCount() {
+			return Math.ceil(this.tableConfig.tableData.length / this.localInputData.itemsPerPage)
+		},
+		getEntries() {
+			const totalPageEntry = Math.min(
+				this.tableConfig.tableData.length,
+				(this.page - 1) * this.localInputData.itemsPerPage + this.localInputData.itemsPerPage
+			)
+
+			return `${
+				this.page === 1 ? 1 : (this.page - 1) * this.localInputData.itemsPerPage + 1
+			}  to ${totalPageEntry} of ${this.tableConfig.tableData.length}`
+		},
 	},
 	methods: {
 		editItem(item) {
