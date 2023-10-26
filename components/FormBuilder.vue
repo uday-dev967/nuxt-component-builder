@@ -13,6 +13,7 @@
 						:rules="getTextFieldRules(field)"
 						:cols="getColSize(field)"
 						:disabled="field.disable || false"
+						validate-on-blur
 						@change="applyDependency(field)"
 					></v-text-field>
 					<v-text-field
@@ -24,6 +25,7 @@
 						:rules="getTextFieldRules(field)"
 						:cols="getColSize(field)"
 						:disabled="field.disable || false"
+						validate-on-blur
 						@change="applyDependency(field)"
 					></v-text-field>
 					<v-textarea
@@ -35,6 +37,7 @@
 						:cols="getColSize(field)"
 						:disabled="field.disable || false"
 						solo
+						validate-on-blur
 						name="input-7-4"
 						@change="applyDependency(field)"
 					></v-textarea>
@@ -48,6 +51,7 @@
 						:cols="getColSize(field)"
 						:rules="getPasswordFieldRules(field)"
 						:disabled="field.disable || false"
+						validate-on-blur
 						@change="applyDependency(field)"
 						@click:append="togglePasswordVisibility"
 					></v-text-field>
@@ -217,7 +221,7 @@
 					v-else-if="button.type === 'closeForm'"
 					:key="index"
 					color="primary"
-					@click="() => closeForm(button)"
+					@click="closeForm(button)"
 					>{{ button.action }}</v-btn
 				>
 			</template>
@@ -235,7 +239,9 @@ export default {
 		},
 		data: {
 			type: Object,
-			required: true,
+			default() {
+				return {}
+			},
 		},
 	},
 	data() {
@@ -295,11 +301,8 @@ export default {
 
 	methods: {
 		closeForm(button) {
-			const reset = () => {
-				this.$refs[this.config.ref].reset()
-			}
-
-			button.executeFunction(reset)
+			button.executeFunction()
+			this.resetForm()
 		},
 		getLabel(field) {
 			if (field.label) {
@@ -312,7 +315,7 @@ export default {
 			return field.col ? field.col : this.col
 		},
 		applyDependency(field) {
-			if (field.dependencyStatus) {
+			if (field.dependency) {
 				field.dependency(this.config, this.data)
 			}
 		},
@@ -348,14 +351,15 @@ export default {
 		togglePasswordVisibility() {
 			this.showPassword = !this.showPassword
 		},
+		resetForm() {
+			this.$refs[this.config.ref].reset()
+		},
 		submitForm() {
 			if (this.$refs[this.config.ref].validate()) {
-				const reset = () => {
-					this.$refs[this.config.ref].reset()
-				}
-				this.$emit("form-submitted", this.localFormData, reset)
+				this.$emit("form-submitted", this.localFormData)
 				// eslint-disable-next-line no-console
 				console.log("form is valid", this.localFormData)
+				this.resetForm()
 			} else {
 				// eslint-disable-next-line no-console
 				console.log("form is invalid")

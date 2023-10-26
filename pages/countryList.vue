@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h1>Table Page Example</h1>
-		<table-builder :table-config="tableConfig" :user-input-data="userInputData">
+		<table-builder :table-config="tableConfig" :user-input-data="userInputData" :show-form="showForm">
 			<template slot="addForm">
 				<dynamic-form
 					:key="formKey"
@@ -15,18 +15,27 @@
 </template>
 
 <script>
-import TableBuilder from "@/components/TableBuilder"
+import { mapActions, mapGetters } from "vuex"
+import TableBuilder from "~/components/TableBuilder"
 import DynamicForm from "~/components/FormBuilder.vue"
-
+import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 export default {
 	name: "TablePage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
 	},
+	mixins: [firstLetterUpperCase],
 	data() {
 		return {
-			userInputData: { itemsPerPage: 20, searchInput: "", selected: [], dialog: false },
+			showForm: false,
+			userInputData: {
+				// can only serves the inital data as a prop (in child) but do not accept any mutations from child
+				itemsPerPage: 5,
+				page: 1,
+				searchInput: "",
+				selected: [],
+			},
 			formData: {},
 			formKey: 0,
 			editIndex: -1,
@@ -37,8 +46,8 @@ export default {
 					{
 						type: "closeForm",
 						action: "close",
-						executeFunction: (resetForm) => {
-							this.closeForm(resetForm)
+						executeFunction: () => {
+							this.closeForm()
 						},
 					},
 				],
@@ -62,45 +71,9 @@ export default {
 				fields: [
 					{
 						type: "text",
-						label: "Name",
-						placeholder: "Desert Name",
-						value: "hai tere",
-						key: "name",
-						rules: ["required"],
-					},
-					{
-						type: "number",
-						label: "Calories",
-						placeholder: "Enter Calories",
-						key: "calories",
-						rules: ["required"],
-					},
-					{
-						type: "number",
-						label: "Fat",
-						placeholder: "Enter fat",
-						key: "fat",
-						rules: ["required"],
-					},
-					{
-						type: "number",
-						label: "carb",
-						placeholder: "Enter Carb",
-						key: "carbs",
-						rules: ["required"],
-					},
-					{
-						type: "number",
-						label: "Protein",
-						placeholder: "Enter Protein",
-						key: "protein",
-						rules: ["required"],
-					},
-					{
-						type: "number",
-						label: "iron",
-						placeholder: "Enter iron",
-						key: "iron",
+						label: "Country Name",
+						placeholder: "Country",
+						key: "countryRegionName",
 						rules: ["required"],
 					},
 				],
@@ -109,133 +82,19 @@ export default {
 					{
 						type: "closeForm",
 						action: "close",
-						executeFunction: (resetForm) => {
-							this.closeForm(resetForm)
+						executeFunction: () => {
+							this.closeForm()
 						},
 					},
 				],
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Dessert Name", value: "name" },
-					{ text: "Calories", value: "calories" },
-					{ text: "Fat (g)", value: "fat" },
-					{ text: "Carbs (g)", value: "carbs" },
-					{ text: "Protein (g)", value: "protein" },
-					{ text: "Iron (g)", value: "iron" },
-					{ text: "Actions", value: "actions", sortable: false },
+					{ text: "Country Name", value: "countryRegionName" },
+					{ text: "Country Code", value: "countryRegionCode" },
 				],
-				tableData: [
-					{
-						id: 1,
-						name: "Frozen Yogurt",
-						calories: 159,
-						fat: 6.0,
-						carbs: 24,
-						protein: 4.0,
-						iron: 8,
-					},
-					{
-						id: 2,
-						name: "Ice cream sandwich",
-						calories: 237,
-						fat: 9.0,
-						carbs: 37,
-						protein: 4.3,
-						iron: 1,
-					},
-					{
-						id: 3,
-
-						name: "Frozen Yogurt",
-						calories: 159,
-						fat: 6.0,
-						carbs: 24,
-						protein: 4.0,
-						iron: 8,
-					},
-					{
-						id: 4,
-
-						name: "Eclair",
-						calories: 262,
-						fat: 16.0,
-						carbs: 23,
-						protein: 6.0,
-						iron: 7,
-					},
-					{
-						id: 5,
-
-						name: "Cupcake",
-						calories: 305,
-						fat: 3.7,
-						carbs: 67,
-						protein: 4.3,
-						iron: 8,
-					},
-					{
-						id: 6,
-
-						name: "Frozen Yogurt",
-						calories: 159,
-						fat: 6.0,
-						carbs: 24,
-						protein: 4.0,
-						iron: 8,
-					},
-					{
-						id: 7,
-
-						name: "Gingerbread",
-						calories: 356,
-						fat: 16.0,
-						carbs: 49,
-						protein: 3.9,
-						iron: 16,
-					},
-					{
-						id: 8,
-
-						name: "Jelly bean",
-						calories: 375,
-						fat: 0.0,
-						carbs: 94,
-						protein: 0.0,
-						iron: 0,
-					},
-
-					{
-						id: 9,
-
-						name: "Honeycomb",
-						calories: 408,
-						fat: 3.2,
-						carbs: 87,
-						protein: 6.5,
-						iron: 45,
-					},
-					{
-						id: 10,
-
-						name: "Donut",
-						calories: 452,
-						fat: 25.0,
-						carbs: 51,
-						protein: 4.9,
-						iron: 22,
-					},
-					{
-						id: 11,
-
-						name: "KitKat",
-						calories: 518,
-						fat: 26.0,
-						carbs: 65,
-						protein: 7,
-						iron: 6,
-					},
-				],
+				tableData: [],
+				totalEntries: 0,
 				topBarConfig: {
 					fields: [
 						{
@@ -245,10 +104,22 @@ export default {
 							fieldType: "number",
 							key: "itemsPerPage",
 							items: [5, 10, 20],
+							executeFunction: (val) => {
+								this.changeItemsPerPage(val)
+							},
 						},
 						{ type: "text", disable: false, placeHolder: "", label: "search", key: "searchInput" },
 						{ type: "spacer", col: 5 },
-						{ type: "button", color: "primary", disable: true, icon: "mdi-delete", action: "delete" },
+						{
+							type: "button",
+							color: "primary",
+							disable: true,
+							icon: "mdi-delete",
+							action: "delete",
+							executeFunction: (selectedItems) => {
+								this.deleteRecords(selectedItems)
+							},
+						},
 						{ type: "button", color: "primary", disable: true, icon: "mdi-export", action: "export" },
 						{
 							type: "button",
@@ -288,11 +159,64 @@ export default {
 						},
 					],
 				},
+				pagination: {
+					onPageChange: (val) => {
+						this.pageChange(val)
+					},
+				},
 			},
 		}
 	},
+	computed: {},
+	created() {
+		this.initializeCountryData({ page: this.userInputData.page - 1, docsPerPage: this.userInputData.itemsPerPage })
+	},
+
 	methods: {
-		formSubmission(newItem, resetForm) {
+		...mapActions("country", ["fetchCountries", "addCountry", "deleteCountries"]),
+		...mapGetters("country", ["getCountries", "getTotalCountries"]),
+		async initializeCountryData(params = { page: 0, docsPerPage: 10 }) {
+			try {
+				const response = await this.fetchCountries(params)
+				if (response.ok) {
+					this.tableConfig.tableData = this.getCountries()
+					// eslint-disable-next-line no-console
+					console.log("initialized", this.tableConfig.tableData)
+					this.tableConfig.totalEntries = this.getTotalCountries()
+				} else {
+					throw new Error("Failed to fetch countries data")
+				}
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error(error) // You might want to log the error.
+				return [] // Return an empty array as a fallback.
+			}
+			// eslint-disable-next-line no-console
+			console.log("res", this.tableConfig.tableData)
+		},
+		pageChange(val) {
+			// eslint-disable-next-line no-console
+			console.log("onPageChange", val)
+			this.userInputData.pageCount = val
+			this.$nextTick(() => {
+				this.initializeCountryData({
+					page: val - 1,
+					docsPerPage: this.userInputData.itemsPerPage,
+				})
+			})
+		},
+		changeItemsPerPage(val) {
+			// eslint-disable-next-line no-console
+			console.log("onItemsCountChange", val)
+			this.userInputData.itemsPerPage = val || 5
+			this.$nextTick(() => {
+				this.initializeCountryData({
+					page: this.userInputData.page - 1,
+					docsPerPage: val,
+				})
+			})
+		},
+		formSubmission(newItem) {
 			// eslint-disable-next-line no-console
 			console.log("Register form submitted with data:", newItem)
 			if (this.formConfig.formCofiguredTo === "add") {
@@ -301,9 +225,25 @@ export default {
 			} else {
 				this.editItem(newItem)
 			}
+			this.showForm = false
 		},
-		addNewItem(newItem) {
-			this.tableConfig.tableData.push(newItem)
+		async addNewItem(country) {
+			try {
+				country.countryRegionName = this.firstLetterUpperCase(country.countryRegionName)
+				const response = await this.addCountry(country)
+				if (response.ok) {
+					this.initializeCountryData({
+						page: this.userInputData.page - 1,
+						docsPerPage: this.userInputData.itemsPerPage,
+					})
+				} else {
+					throw new Error("Failed to fetch countries data")
+				}
+			} catch (error) {
+				// eslint-disable-next-line no-console
+				console.error(error) // You might want to log the error.
+				return [] // Return an empty array as a fallback.
+			}
 		},
 		editItem(item) {
 			if (this.editIndex !== -1) {
@@ -316,30 +256,30 @@ export default {
 			}
 			// eslint-disable-next-line no-console
 		},
-		closeForm(resetForm) {
-			this.userInputData.dialog = false
-			// eslint-disable-next-line no-console
+		closeForm() {
 			this.formData = {}
-			resetForm()
+			// eslint-disable-next-line no-console
+			console.log("form closing")
+			this.showForm = false
 		},
 		openAddNewForm() {
 			this.formConfig = { ...this.formConfig, ...this.addFormConfig }
 			this.formData = {}
-			this.userInputData.dialog = true
+			this.showForm = true
 			this.formKey++
 		},
 		openEditForm(item) {
 			this.formConfig = { ...this.formConfig, ...this.editFormConfig }
 			this.editIndex = this.tableConfig.tableData.findIndex((eachItem) => eachItem.id === item.id)
 			// eslint-disable-next-line no-console
-			console.log("my item", item)
+			// console.log("my item", item)
 			this.formData = JSON.parse(JSON.stringify(item))
-			this.userInputData.dialog = true
+			this.showForm = true
 			this.formKey++
 		},
-		deleteRecord(item) {
+		deleteRecords(selectedItems) {
 			// eslint-disable-next-line no-console
-			console.log("my delete item", item)
+			console.log("my delete item", selectedItems)
 		},
 	},
 }
