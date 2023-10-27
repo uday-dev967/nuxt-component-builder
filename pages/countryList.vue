@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h1>Table Page Example</h1>
-		<table-builder :table-config="tableConfig" :user-input-data="userInputData" :show-form="showForm">
+		<table-builder :table-config="tableConfig" :show-form="showForm">
 			<template slot="addForm">
 				<dynamic-form
 					:key="formKey"
@@ -29,13 +29,8 @@ export default {
 	data() {
 		return {
 			showForm: false,
-			userInputData: {
-				// can only serves the inital data as a prop (in child) but do not accept any mutations from child
-				itemsPerPage: 5,
-				page: 1,
-				searchInput: "",
-				selected: [],
-			},
+			itemsPerPage: 5,
+			page: 1,
 			formData: {},
 			formKey: 0,
 			editIndex: -1,
@@ -76,6 +71,18 @@ export default {
 						key: "countryRegionName",
 						rules: ["required"],
 					},
+					{
+						type: "text",
+						label: "Country Code",
+						placeholder: "Country Code",
+						key: "countryRegionCode",
+					},
+					{
+						type: "textArea",
+						label: "Note",
+						placeholder: "Country",
+						key: "CountryNote",
+					},
 				],
 				buttons: [
 					{ type: "submit", action: "add", color: "primary" },
@@ -92,6 +99,7 @@ export default {
 				headers: [
 					{ text: "Country Name", value: "countryRegionName" },
 					{ text: "Country Code", value: "countryRegionCode" },
+					{ text: "Note", value: "countryNote" },
 				],
 				tableData: [],
 				totalEntries: 0,
@@ -104,6 +112,7 @@ export default {
 							fieldType: "number",
 							key: "itemsPerPage",
 							items: [5, 10, 20],
+							relatedTo: "pagination",
 							executeFunction: (val) => {
 								this.changeItemsPerPage(val)
 							},
@@ -169,7 +178,7 @@ export default {
 	},
 	computed: {},
 	created() {
-		this.initializeCountryData({ page: this.userInputData.page - 1, docsPerPage: this.userInputData.itemsPerPage })
+		this.initializeCountryData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
 	},
 
 	methods: {
@@ -178,7 +187,7 @@ export default {
 		async initializeCountryData(params = { page: 0, docsPerPage: 10 }) {
 			try {
 				const response = await this.fetchCountries(params)
-				if (response.ok) {
+				if (response.status === 200) {
 					this.tableConfig.tableData = this.getCountries()
 					// eslint-disable-next-line no-console
 					console.log("initialized", this.tableConfig.tableData)
@@ -197,24 +206,20 @@ export default {
 		pageChange(val) {
 			// eslint-disable-next-line no-console
 			console.log("onPageChange", val)
-			this.userInputData.pageCount = val
+			this.page = val
 			this.$nextTick(() => {
 				this.initializeCountryData({
 					page: val - 1,
-					docsPerPage: this.userInputData.itemsPerPage,
+					docsPerPage: this.itemsPerPage,
 				})
 			})
 		},
 		changeItemsPerPage(val) {
 			// eslint-disable-next-line no-console
 			console.log("onItemsCountChange", val)
-			this.userInputData.itemsPerPage = val || 5
-			this.$nextTick(() => {
-				this.initializeCountryData({
-					page: this.userInputData.page - 1,
-					docsPerPage: val,
-				})
-			})
+			this.itemsPerPage = val
+			this.page = 1
+			this.pageChange(1)
 		},
 		formSubmission(newItem) {
 			// eslint-disable-next-line no-console
@@ -231,13 +236,16 @@ export default {
 			try {
 				country.countryRegionName = this.firstLetterUpperCase(country.countryRegionName)
 				const response = await this.addCountry(country)
-				if (response.ok) {
+				if (response.status === 201) {
 					this.initializeCountryData({
-						page: this.userInputData.page - 1,
-						docsPerPage: this.userInputData.itemsPerPage,
+						page: this.page - 1,
+						docsPerPage: this.itemsPerPage,
 					})
 				} else {
-					throw new Error("Failed to fetch countries data")
+					if (response.status === 400) {
+						throw new Error("This Country data is already exists")
+					}
+					throw new Error("Failed to add country data")
 				}
 			} catch (error) {
 				// eslint-disable-next-line no-console

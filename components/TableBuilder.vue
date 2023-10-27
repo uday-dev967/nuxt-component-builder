@@ -6,7 +6,7 @@
 			:items="tableConfig.tableData"
 			:page.sync="localInputData.page"
 			item-key="_id"
-			:items-per-page="localInputData.itemsPerPage || 10"
+			:items-per-page="localInputData.itemsPerPage"
 			hide-default-footer
 			class="elevation-1"
 			show-select
@@ -79,7 +79,7 @@
 						<v-spacer></v-spacer>
 						<v-col cols="5">
 							<v-pagination
-								v-model="page"
+								v-model="localInputData.page"
 								:length="getPageCount"
 								circle
 								@input="changePage"
@@ -119,10 +119,6 @@ export default {
 			type: Object,
 			required: true,
 		},
-		userInputData: {
-			type: Object,
-			required: true,
-		},
 		showForm: {
 			type: Boolean,
 			default: false,
@@ -133,7 +129,12 @@ export default {
 			page: 1,
 			searchInput: "",
 			col: 1,
-			localInputData: JSON.parse(JSON.stringify(this.userInputData)),
+			localInputData: {
+				itemsPerPage: 5,
+				page: 1,
+				searchInput: "",
+				selected: [],
+			},
 			localHeader: [...this.tableConfig.headers, { text: "Actions", value: "actions", sortable: false }],
 		}
 	},
@@ -147,11 +148,13 @@ export default {
 		getEntries() {
 			const totalPageEntry = Math.min(
 				this.tableConfig.totalEntries,
-				(this.page - 1) * this.localInputData.itemsPerPage + this.localInputData.itemsPerPage
+				(this.localInputData.page - 1) * this.localInputData.itemsPerPage + this.localInputData.itemsPerPage
 			)
 
 			return `${
-				this.page === 1 ? 1 : (this.page - 1) * this.localInputData.itemsPerPage + 1
+				this.localInputData.page === 1
+					? 1
+					: (this.localInputData.page - 1) * this.localInputData.itemsPerPage + 1
 			}  to ${totalPageEntry} of ${this.tableConfig.totalEntries}`
 		},
 	},
@@ -163,7 +166,16 @@ export default {
 			action.executeFunction(item)
 		},
 		applyDependency(event, field) {
+			if (field.relatedTo) {
+				if (field.relatedTo === "pagination") {
+					this.changeItemsPerPage(event)
+				}
+			}
 			field.executeFunction(event)
+		},
+		changeItemsPerPage(event) {
+			this.localInputData.page = 1
+			this.localInputData.itemsPerPage = Number(event) || this.localInputData.itemsPerPage
 		},
 		editItem(item) {
 			// eslint-disable-next-line no-console
