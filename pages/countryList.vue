@@ -19,13 +19,15 @@ import { mapActions, mapGetters } from "vuex"
 import TableBuilder from "~/components/TableBuilder"
 import DynamicForm from "~/components/FormBuilder.vue"
 import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
+import generalcrud from "~/mixins/generalcrud.js"
+
 export default {
 	name: "TablePage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
 	},
-	mixins: [firstLetterUpperCase],
+	mixins: [firstLetterUpperCase, generalcrud],
 	data() {
 		return {
 			showForm: false,
@@ -178,37 +180,23 @@ export default {
 	},
 	computed: {},
 	created() {
-		this.initializeCountryData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
+		this.initializeTableData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
 	},
 
 	methods: {
 		...mapActions("country", ["fetchCountries", "addCountry", "deleteCountries", "updateCountry"]),
 		...mapGetters("country", ["getCountries", "getTotalCountries"]),
-		async initializeCountryData(params = { page: 0, docsPerPage: 10 }) {
-			try {
-				const response = await this.fetchCountries(params)
-				if (response.status === 200) {
-					this.tableConfig.tableData = this.getCountries()
-					// eslint-disable-next-line no-console
-					console.log("initialized", this.tableConfig.tableData)
-					this.tableConfig.totalEntries = this.getTotalCountries()
-				} else {
-					throw new Error("Failed to fetch countries data")
-				}
-			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.error(error) // You might want to log the error.
-				return [] // Return an empty array as a fallback.
-			}
+		async initializeTableData(params = { page: 0, docsPerPage: 10 }) {
+			await this.initializeData(this.fetchCountries, this.getCountries, this.getTotalCountries, params)
 			// eslint-disable-next-line no-console
-			console.log("res", this.tableConfig.tableData)
+			console.log("response in the table", this.tableConfig.tableData)
 		},
 		pageChange(val) {
 			// eslint-disable-next-line no-console
 			console.log("onPageChange", val)
 			this.page = val
 			this.$nextTick(() => {
-				this.initializeCountryData({
+				this.initializeTableData({
 					page: val - 1,
 					docsPerPage: this.itemsPerPage,
 				})
@@ -233,44 +221,10 @@ export default {
 			this.showForm = false
 		},
 		async addNewItem(country) {
-			try {
-				country.countryRegionName = this.firstLetterUpperCase(country.countryRegionName)
-				const response = await this.addCountry(country)
-				if (response.status === 201) {
-					this.initializeCountryData({
-						page: this.page - 1,
-						docsPerPage: this.itemsPerPage,
-					})
-				} else {
-					if (response.status === 400) {
-						throw new Error("This Country data is already exists")
-					}
-					throw new Error("Failed to add country data")
-				}
-			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.error(error) // You might want to log the error.
-			}
+			await this.addItem(country, this.addCountry)
 		},
 		async editItem(item) {
-			try {
-				const country = JSON.parse(JSON.stringify(item))
-				const response = await this.updateCountry(country)
-				if (response.status === 200) {
-					this.initializeCountryData({
-						page: this.page - 1,
-						docsPerPage: this.itemsPerPage,
-					})
-				} else {
-					if (response.status === 400) {
-						throw new Error("This Country data is already exists")
-					}
-					throw new Error("Failed to add country data")
-				}
-			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.error(error) // You might want to log the error.
-			}
+			await this.editRecord(item, this.updateCountry)
 		},
 		closeForm() {
 			this.formData = {}
@@ -294,25 +248,7 @@ export default {
 			this.formKey++
 		},
 		async deleteRecords(selectedItems) {
-			const selectedCountires = Array.isArray(selectedItems) ? selectedItems : [selectedItems]
-			// eslint-disable-next-line no-console
-			console.log("my delete item", selectedCountires)
-			const countries = selectedCountires.map((country) => country._id)
-			try {
-				const response = await this.deleteCountries({ ids: countries })
-				if (response.status === 204) {
-					this.page = 1
-					this.initializeCountryData({
-						page: this.page - 1,
-						docsPerPage: this.itemsPerPage,
-					})
-				} else {
-					throw new Error("Failed to delete countries data")
-				}
-			} catch (error) {
-				// eslint-disable-next-line no-console
-				console.error(error) // You might want to log the error.
-			}
+			await this.deleteItems(selectedItems, this.deleteCountries)
 		},
 	},
 }

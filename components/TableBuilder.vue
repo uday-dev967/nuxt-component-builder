@@ -156,7 +156,7 @@ export default {
 
 			return `${
 				this.localInputData.page === 1
-					? 1
+					? Math.min(1, this.tableConfig.totalEntries)
 					: (this.localInputData.page - 1) * this.localInputData.itemsPerPage + 1
 			}  to ${totalPageEntry} of ${this.tableConfig.totalEntries}`
 		},
