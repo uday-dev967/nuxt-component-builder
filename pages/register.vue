@@ -147,8 +147,8 @@ export default {
 						key: "isFavouritesCitiesEnable",
 						refField: "favouriteCities",
 						dependencyStatus: true,
-						dependency: (configObj, formdata) => {
-							this.dependecySwitchLock(configObj, formdata, "isFavouritesCitiesEnable")
+						dependency: (formdata) => {
+							this.dependecySwitchLock(formdata, "isFavouritesCitiesEnable")
 						},
 					},
 					{
@@ -170,8 +170,8 @@ export default {
 						key: "isFavouriteSportsEnable",
 						refField: "favouriteCities",
 						dependencyStatus: true,
-						dependency: (configObj, formdata) => {
-							this.dependecySwitchLock(configObj, formdata, "isFavouriteSportsEnable")
+						dependency: (formdata) => {
+							this.dependecySwitchLock(formdata, "isFavouriteSportsEnable")
 						},
 					},
 					{
@@ -242,8 +242,8 @@ export default {
 						disable: false,
 						refField: "pipeSizes",
 						dependencyStatus: true,
-						dependency: function (configObj, formdata) {
-							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+						dependency: function (formdata) {
+							const dependentObj = this.config.fields.find((field) => field.refField === this.key)
 							if (formdata[this.key] !== null) {
 								dependentObj.disable = false
 								dependentObj.items = dependentObj.itemsObj[formdata[this.key].value]
@@ -271,8 +271,8 @@ export default {
 						disable: true,
 						refField: "unitType",
 						dependencyStatus: true,
-						dependency: function (configObj, formdata) {
-							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+						dependency: function (formdata) {
+							const dependentObj = this.config.fields.find((field) => field.refField === this.key)
 							if (formdata[this.key].length === 0) {
 								dependentObj.disable = false
 							} else {
@@ -306,8 +306,8 @@ export default {
 			console.log(first)
 			// Handle registration logic here
 		},
-		dependecySwitchLock(configObj, formdata, key) {
-			const dependentObj = configObj.fields.find((field) => field.refField === key)
+		dependecySwitchLock(formdata, key) {
+			const dependentObj = this.config.fields.find((field) => field.refField === key)
 			if (formdata[key]) {
 				dependentObj.disable = true
 			} else {

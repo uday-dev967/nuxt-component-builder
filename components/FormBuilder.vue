@@ -316,7 +316,7 @@ export default {
 		},
 		applyDependency(field) {
 			if (field.dependency) {
-				field.dependency(this.config, this.data)
+				field.dependency(this.data)
 			}
 		},
 		initalizeAsyncListKey(field) {

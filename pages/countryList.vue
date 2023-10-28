@@ -20,6 +20,7 @@ import TableBuilder from "~/components/TableBuilder"
 import DynamicForm from "~/components/FormBuilder.vue"
 import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 import generalcrud from "~/mixins/generalcrud.js"
+import tableFormControls from "~/mixins/formControls.js"
 
 export default {
 	name: "TablePage",
@@ -27,41 +28,9 @@ export default {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
 	},
-	mixins: [firstLetterUpperCase, generalcrud],
+	mixins: [firstLetterUpperCase, generalcrud, tableFormControls],
 	data() {
 		return {
-			showForm: false,
-			itemsPerPage: 5,
-			page: 1,
-			formData: {},
-			formKey: 0,
-			editIndex: -1,
-			editFormConfig: {
-				formCofiguredTo: "edit",
-				buttons: [
-					{ type: "submit", action: "Edit", color: "primary" },
-					{
-						type: "closeForm",
-						action: "close",
-						executeFunction: () => {
-							this.closeForm()
-						},
-					},
-				],
-			},
-			addFormConfig: {
-				formCofiguredTo: "add",
-				buttons: [
-					{ type: "submit", action: "add", color: "primary" },
-					{
-						type: "closeForm",
-						action: "close",
-						executeFunction: (resetForm) => {
-							this.closeForm(resetForm)
-						},
-					},
-				],
-			},
 			formConfig: {
 				ref: "exampleTableForm",
 				formCofiguredTo: "add",
@@ -226,27 +195,7 @@ export default {
 		async editItem(item) {
 			await this.editRecord(item, this.updateCountry)
 		},
-		closeForm() {
-			this.formData = {}
-			// eslint-disable-next-line no-console
-			console.log("form closing")
-			this.showForm = false
-		},
-		openAddNewForm() {
-			this.formConfig = { ...this.formConfig, ...this.addFormConfig }
-			this.formData = {}
-			this.showForm = true
-			this.formKey++
-		},
-		openEditForm(item) {
-			this.formConfig = { ...this.formConfig, ...this.editFormConfig }
-			this.editIndex = this.tableConfig.tableData.findIndex((eachItem) => eachItem.id === item.id)
-			// eslint-disable-next-line no-console
-			// console.log("my item", item)
-			this.formData = JSON.parse(JSON.stringify(item))
-			this.showForm = true
-			this.formKey++
-		},
+
 		async deleteRecords(selectedItems) {
 			await this.deleteItems(selectedItems, this.deleteCountries)
 		},
