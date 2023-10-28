@@ -42,7 +42,7 @@
 
 							<v-btn
 								v-else-if="field.type === 'button'"
-								:disabled="localInputData.selected.length === 0"
+								:disabled="getDisable(field)"
 								:color="field.color"
 								small
 								class="mr-1"
@@ -165,6 +165,12 @@ export default {
 		this.$set(this.localInputData, "selected", [])
 	},
 	methods: {
+		getDisable(field) {
+			if (field.action === "delete") {
+				return this.localInputData.selected.length === 0
+			}
+			return false
+		},
 		performAction(item, action) {
 			action.executeFunction(item)
 			if (action.title === "Delete") {
@@ -189,6 +195,7 @@ export default {
 			if (button.action === "delete") {
 				this.changeItemsPerPage(this.localInputData.itemsPerPage)
 			}
+			this.localInputData.selected = []
 		},
 		changePage(event) {
 			this.tableConfig.pagination.onPageChange(event)

@@ -1,11 +1,16 @@
+import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
 import CountryService from "@/services/countryService.js"
+
+const mutationTypes = {
+	setData: "setCountries",
+	setTotal: "setTotalCountries",
+}
 
 export const namespaced = true
 
 export const state = () => {
 	return {
 		countries: [],
-		error: {},
 		totalCountries: 0,
 	}
 }
@@ -14,79 +19,74 @@ export const mutations = {
 	setCountries(state, list) {
 		state.countries = list
 	},
-	setError(state, error) {
-		state.error = error
-	},
 	setTotalCountries(state, totalCountries) {
 		state.totalCountries = totalCountries
 	},
 }
 export const actions = {
-	async fetchCountries({ commit }, params) {
-		try {
-			const response = await CountryService.getCountries(params)
-			commit("setCountries", response.data.countries)
-			commit("setTotalCountries", response.data.total)
-			// eslint-disable-next-line no-console
-			console.log("from country store actions", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error })
-			throw error
-		}
-	},
-	async fetchAllCountries({ commit }) {
-		try {
-			const response = await CountryService.getAllCountries()
-			commit("setCountries", response.data.countries)
-			commit("setTotalCountries", response.data.total)
-			// eslint-disable-next-line no-console
-			console.log("from country store actions", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error })
-			throw error
-		}
+	fetchCountries({ commit }, params) {
+		return fetchData(commit, CountryService.getCountries, params, mutationTypes)
 	},
 
-	async addCountry({ commit }, coutry) {
-		try {
-			const response = await CountryService.postCountry(coutry)
-			// eslint-disable-next-line no-console
-			console.log("posting the new country", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error.message })
-			// eslint-disable-next-line no-console
-			console.log("posting the new country", error.message)
-			return error.response
-		}
+	fetchAllCountries({ commit }) {
+		return fetchAllData(commit, CountryService.getAllCountries, mutationTypes)
+
+		// try {
+		// 	const response = await CountryService.getAllCountries()
+		// 	commit("setCountries", response.data.countries)
+		// 	commit("setTotalCountries", response.data.total)
+		// 	// eslint-disable-next-line no-console
+		// 	console.log("from country store actions", response)
+		// 	return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
+		// } catch (error) {
+		// 	if (error.response.status === 400) {
+		// 		return { success: false, message: error.response.data.message }
+		// 	}
+		// 	return { success: false, message: "OOPS! something went wrong" }
+		// }
 	},
-	async updateCountry({ commit }, coutry) {
-		try {
-			const response = await CountryService.updateCountry(coutry)
-			// eslint-disable-next-line no-console
-			console.log("updating the existsing country", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error.message })
-			// eslint-disable-next-line no-console
-			console.log("updating the existsing country", error.message)
-			return error.response
-		}
+
+	addCountry({ commit }, country) {
+		return addItem(CountryService.postCountry, country)
+		// try {
+		// 	const response = await CountryService.postCountry(country)
+		// 	// eslint-disable-next-line no-console
+		// 	console.log("posting the new country", response)
+		// 	return { success: true, message: "New Item is Added successfully" }
+		// } catch (error) {
+		// 	if (error.response.status === 400) {
+		// 		return { success: false, message: error.response.data.message }
+		// 	}
+		// 	return { success: false, message: "OOPS! something went wrong" }
+		// }
 	},
-	async deleteCountries({ commit }, countries) {
-		try {
-			const response = await CountryService.deleteCountries(countries)
-			// eslint-disable-next-line no-console
-			console.log("deleting the existsing country", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error.message })
-			// eslint-disable-next-line no-console
-			console.log("deleting the existsing country", error.message)
-			return error.response
-		}
+	updateCountry({ commit }, country) {
+		return updateItem(CountryService.updateCountry, country)
+		// try {
+		// 	const response = await CountryService.updateCountry(country)
+		// 	// eslint-disable-next-line no-console
+		// 	console.log("updating the existsing country", response)
+		// 	return { success: true, message: "Item Updated Successfully" }
+		// } catch (error) {
+		// 	if (error.response.status === 400) {
+		// 		return { success: false, message: error.response.data.message }
+		// 	}
+		// 	return { success: false, message: "OOPS! something went wrong" }
+		// }
+	},
+	deleteCountries({ commit }, countries) {
+		return deleteItems(CountryService.deleteCountries, countries)
+		// try {
+		// 	const response = await CountryService.deleteCountries(countries)
+		// 	// eslint-disable-next-line no-console
+		// 	console.log("deleting the existsing country", response)
+		// 	return { success: true, message: "Item Deleted Successfully" }
+		// } catch (error) {
+		// 	if (error.response.status === 400) {
+		// 		return { success: false, message: error.response.data.message }
+		// 	}
+		// 	return { success: false, message: "OOPS! something went wrong" }
+		// }
 	},
 }
 

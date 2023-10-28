@@ -11,6 +11,7 @@
 				></dynamic-form>
 			</template>
 		</table-builder>
+		<snack-bar ref="snackbar"></snack-bar>
 	</div>
 </template>
 
@@ -21,12 +22,13 @@ import DynamicForm from "~/components/FormBuilder.vue"
 import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
-
+import SnackBar from "~/components/SnackBar.vue"
 export default {
 	name: "TablePage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
+		"snack-bar": SnackBar,
 	},
 	mixins: [firstLetterUpperCase, generalcrud, tableFormControls],
 	data() {
@@ -155,8 +157,8 @@ export default {
 	methods: {
 		...mapActions("country", ["fetchCountries", "addCountry", "deleteCountries", "updateCountry"]),
 		...mapGetters("country", ["getCountries", "getTotalCountries"]),
-		async initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			await this.initializeData(this.fetchCountries, this.getCountries, this.getTotalCountries, params)
+		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
+			this.initializeData(this.fetchCountries, this.getCountries, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},
@@ -189,15 +191,15 @@ export default {
 			}
 			this.showForm = false
 		},
-		async addNewItem(country) {
-			await this.addItem(country, this.addCountry)
+		addNewItem(country) {
+			this.addItem(country, this.addCountry)
 		},
-		async editItem(item) {
-			await this.editRecord(item, this.updateCountry)
+		editItem(item) {
+			this.editRecord(item, this.updateCountry)
 		},
 
-		async deleteRecords(selectedItems) {
-			await this.deleteItems(selectedItems, this.deleteCountries)
+		deleteRecords(selectedItems) {
+			this.deleteItems(selectedItems, this.deleteCountries)
 		},
 	},
 }
