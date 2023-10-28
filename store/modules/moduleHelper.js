@@ -1,7 +1,7 @@
 export async function fetchData(commit, service, payload, mutationTypes) {
 	try {
 		const response = await service(payload)
-		commit(mutationTypes.setData, response.data.countries)
+		commit(mutationTypes.setData, response.data)
 		commit(mutationTypes.setTotal, response.data.total)
 		return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
 	} catch (error) {
@@ -63,6 +63,8 @@ export async function deleteItems(service, payload) {
 		console.log("deleting the existsing country", response)
 		return { success: true, message: "Item Deleted Successfully" }
 	} catch (error) {
+		// eslint-disable-next-line no-console
+		console.log("error response", error.response)
 		if (error.response.status === 400) {
 			return { success: false, message: error.response.data.message }
 		}

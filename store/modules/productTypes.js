@@ -1,101 +1,59 @@
-import ProductTypesServices from "~/services/productTypesServices.js"
+import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
+import ApiService from "~/services/productTypesServices.js"
+
+const mutationTypes = {
+	setData: "setProductTypesData",
+	setTotal: "setTotalProductTypes",
+}
+
+const baseNames = {
+	singular: "ProductType",
+	prural: "ProductTypes",
+}
 
 export const namespaced = true
 
 export const state = () => {
 	return {
-		productTypes: [],
+		productTypesData: {},
 		error: {},
 		totalProductTypes: 0,
 	}
 }
 
 export const mutations = {
-	setProductTypes(state, list) {
-		state.productTypes = list
-	},
-	setError(state, error) {
-		state.error = error
+	setProductTypesData(state, data) {
+		state.productTypesData = data
 	},
 	setTotalProductTypes(state, totalProductTypes) {
 		state.totalProductTypes = totalProductTypes
 	},
 }
+
 export const actions = {
-	async fetchProductTypes({ commit }, params) {
-		try {
-			const response = await ProductTypesServices.getProductTypes(params)
-			commit("setProductTypes", response.data.productTypes)
-			commit("setTotalProductTypes", response.data.total)
-			// eslint-disable-next-line no-console
-			console.log("from productTypes store actions", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error })
-			throw error
-		}
+	fetchProductTypes({ commit }, params) {
+		return fetchData(commit, ApiService[`get${baseNames.prural}`], params, mutationTypes)
 	},
-	async fetchAllProductTypes({ commit }) {
-		try {
-			const response = await ProductTypesServices.getAllProductTypes()
-			commit("setProductTypes", response.data.productTypes)
-			commit("setTotalProductTypes", response.data.total)
-			// eslint-disable-next-line no-console
-			console.log("from productTypes store actions", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error })
-			throw error
-		}
+	fetchAllProductTypes({ commit }) {
+		return fetchAllData(commit, ApiService[`getAll${baseNames.prural}`], mutationTypes)
 	},
 
-	async addProductType({ commit }, productType) {
-		try {
-			const response = await ProductTypesServices.postProductType(productType)
-			// eslint-disable-next-line no-console
-			console.log("posting the new productTypes", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error.message })
-			// eslint-disable-next-line no-console
-			console.log("posting the new productTypes", error.message)
-			return error.response
-		}
+	addProductType({ commit }, data) {
+		return addItem(ApiService[`post${baseNames.singular}`], data)
 	},
-	async updateProductType({ commit }, productType) {
-		try {
-			const response = await ProductTypesServices.updateProductType(productType)
-			// eslint-disable-next-line no-console
-			console.log("updating the existsing productTypes", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error.message })
-			// eslint-disable-next-line no-console
-			console.log("updating the existsing productTypes", error.message)
-			return error.response
-		}
+	updateProductType({ commit }, data) {
+		return updateItem(ApiService[`update${baseNames.singular}`], data)
 	},
-	async deleteProductTypes({ commit }, productTypes) {
-		try {
-			const response = await ProductTypesServices.deleteProductTypes(productTypes)
-			// eslint-disable-next-line no-console
-			console.log("deleting the existsing productTypes", response)
-			return { status: response.status }
-		} catch (error) {
-			commit("setError", { isError: true, errMsg: error.message })
-			// eslint-disable-next-line no-console
-			console.log("deleting the existsing productTypes", error.message)
-			return error.response
-		}
+	deleteProductTypes({ commit }, data) {
+		return deleteItems(ApiService[`delete${baseNames.prural}`], data)
 	},
 }
 
 export const getters = {
 	getProductTypes(state) {
-		return state.productTypes
-	},
-	getTotalProductTypes(state) {
-		return state.totalProductTypes
+		// eslint-disable-next-line no-console
+		console.log("from getter", state.productTypesData)
+		return state.productTypesData.productTypes
 	},
 	getProductTypeCodes(state) {
 		return state.productTypes.map((productTypes) => productTypes.productTypesRegionCode)

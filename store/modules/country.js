@@ -1,23 +1,28 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
-import CountryService from "@/services/countryService.js"
+import ApiService from "@/services/countryService.js"
 
 const mutationTypes = {
-	setData: "setCountries",
+	setData: "setCountriesData",
 	setTotal: "setTotalCountries",
+}
+
+const baseNames = {
+	singular: "Country",
+	prural: "Countries",
 }
 
 export const namespaced = true
 
 export const state = () => {
 	return {
-		countries: [],
+		countriesData: {},
 		totalCountries: 0,
 	}
 }
 
 export const mutations = {
-	setCountries(state, list) {
-		state.countries = list
+	setCountriesData(state, countiresData) {
+		state.countriesData = countiresData
 	},
 	setTotalCountries(state, totalCountries) {
 		state.totalCountries = totalCountries
@@ -25,14 +30,14 @@ export const mutations = {
 }
 export const actions = {
 	fetchCountries({ commit }, params) {
-		return fetchData(commit, CountryService.getCountries, params, mutationTypes)
+		return fetchData(commit, ApiService[`get${baseNames.prural}`], params, mutationTypes)
 	},
 
 	fetchAllCountries({ commit }) {
-		return fetchAllData(commit, CountryService.getAllCountries, mutationTypes)
+		return fetchAllData(commit, ApiService[`getAll${baseNames.prural}`], mutationTypes)
 
 		// try {
-		// 	const response = await CountryService.getAllCountries()
+		// 	const response = await ApiService.getAllCountries()
 		// 	commit("setCountries", response.data.countries)
 		// 	commit("setTotalCountries", response.data.total)
 		// 	// eslint-disable-next-line no-console
@@ -47,9 +52,9 @@ export const actions = {
 	},
 
 	addCountry({ commit }, country) {
-		return addItem(CountryService.postCountry, country)
+		return addItem(ApiService[`post${baseNames.singular}`], country)
 		// try {
-		// 	const response = await CountryService.postCountry(country)
+		// 	const response = await ApiService.postCountry(country)
 		// 	// eslint-disable-next-line no-console
 		// 	console.log("posting the new country", response)
 		// 	return { success: true, message: "New Item is Added successfully" }
@@ -61,9 +66,9 @@ export const actions = {
 		// }
 	},
 	updateCountry({ commit }, country) {
-		return updateItem(CountryService.updateCountry, country)
+		return updateItem(ApiService[`update${baseNames.singular}`], country)
 		// try {
-		// 	const response = await CountryService.updateCountry(country)
+		// 	const response = await ApiService.updateCountry(country)
 		// 	// eslint-disable-next-line no-console
 		// 	console.log("updating the existsing country", response)
 		// 	return { success: true, message: "Item Updated Successfully" }
@@ -75,9 +80,9 @@ export const actions = {
 		// }
 	},
 	deleteCountries({ commit }, countries) {
-		return deleteItems(CountryService.deleteCountries, countries)
+		return deleteItems(ApiService[`delete${baseNames.prural}`], countries)
 		// try {
-		// 	const response = await CountryService.deleteCountries(countries)
+		// 	const response = await ApiService.deleteCountries(countries)
 		// 	// eslint-disable-next-line no-console
 		// 	console.log("deleting the existsing country", response)
 		// 	return { success: true, message: "Item Deleted Successfully" }
@@ -92,7 +97,7 @@ export const actions = {
 
 export const getters = {
 	getCountries(state) {
-		return state.countries
+		return state.countriesData.countries
 	},
 	getTotalCountries(state) {
 		return state.totalCountries

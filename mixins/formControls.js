@@ -35,6 +35,35 @@ export default {
 		}
 	},
 	methods: {
+		pageChange(val) {
+			// eslint-disable-next-line no-console
+			console.log("onPageChange", val)
+			this.page = val
+			this.$nextTick(() => {
+				this.initializeTableData({
+					page: val - 1,
+					docsPerPage: this.itemsPerPage,
+				})
+			})
+		},
+		changeItemsPerPage(val) {
+			// eslint-disable-next-line no-console
+			console.log("onItemsCountChange", val)
+			this.itemsPerPage = val
+			this.page = 1
+			this.pageChange(1)
+		},
+		formSubmission(newItem) {
+			// eslint-disable-next-line no-console
+			console.log("Register form submitted with data:", newItem)
+			if (this.formConfig.formCofiguredTo === "add") {
+				const item = JSON.parse(JSON.stringify(newItem))
+				this.addNewItem(item)
+			} else {
+				this.editItem(newItem)
+			}
+			this.showForm = false
+		},
 		closeForm() {
 			this.formData = {}
 			// eslint-disable-next-line no-console
