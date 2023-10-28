@@ -1,4 +1,5 @@
 import * as country from "@/store/modules/country.js"
+import * as productTypes from "~/store/modules/productTypes.js"
 
 export default {
 	state() {
@@ -9,5 +10,6 @@ export default {
 	actions: {},
 	modules: {
 		country,
+		productTypes,
 	},
 }

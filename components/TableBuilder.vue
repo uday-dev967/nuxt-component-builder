@@ -11,6 +11,9 @@
 			class="elevation-1"
 			show-select
 		>
+			<template #[`header.name`]="{ header }">
+				{{ header.text.toUpperCase() }}
+			</template>
 			<template #top>
 				<v-toolbar flat>
 					<v-row class="mt-2">
@@ -56,7 +59,7 @@
 										small
 										class="mr-1"
 										v-on="on"
-										@click="() => multiSelectButtonFuntion(field)"
+										@click="multiSelectButtonFuntion(field)"
 									>
 										<v-icon left>{{ field.icon }}</v-icon>
 										{{ field.action }}
@@ -164,6 +167,9 @@ export default {
 	methods: {
 		performAction(item, action) {
 			action.executeFunction(item)
+			if (action.title === "Delete") {
+				this.changeItemsPerPage(this.localInputData.itemsPerPage)
+			}
 		},
 		applyDependency(event, field) {
 			if (field.relatedTo) {
@@ -177,16 +183,12 @@ export default {
 			this.localInputData.page = 1
 			this.localInputData.itemsPerPage = Number(event) || this.localInputData.itemsPerPage
 		},
-		editItem(item) {
-			// eslint-disable-next-line no-console
-			console.log(item)
-		},
-		deleteItem(item) {
-			// eslint-disable-next-line no-console
-			console.log(item)
-		},
+
 		multiSelectButtonFuntion(button) {
 			button.executeFunction(this.localInputData.selected)
+			if (button.action === "delete") {
+				this.changeItemsPerPage(this.localInputData.itemsPerPage)
+			}
 		},
 		changePage(event) {
 			this.tableConfig.pagination.onPageChange(event)

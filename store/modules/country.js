@@ -35,6 +35,20 @@ export const actions = {
 			throw error
 		}
 	},
+	async fetchAllCountries({ commit }) {
+		try {
+			const response = await CountryService.getAllCountries()
+			commit("setCountries", response.data.countries)
+			commit("setTotalCountries", response.data.total)
+			// eslint-disable-next-line no-console
+			console.log("from country store actions", response)
+			return { status: response.status }
+		} catch (error) {
+			commit("setError", { isError: true, errMsg: error })
+			throw error
+		}
+	},
+
 	async addCountry({ commit }, coutry) {
 		try {
 			const response = await CountryService.postCountry(coutry)
@@ -44,7 +58,7 @@ export const actions = {
 		} catch (error) {
 			commit("setError", { isError: true, errMsg: error.message })
 			// eslint-disable-next-line no-console
-			console.log("posting the new country", error.response)
+			console.log("posting the new country", error.message)
 			return error.response
 		}
 	},
@@ -57,20 +71,20 @@ export const actions = {
 		} catch (error) {
 			commit("setError", { isError: true, errMsg: error.message })
 			// eslint-disable-next-line no-console
-			console.log("updating the existsing country", error.response)
+			console.log("updating the existsing country", error.message)
 			return error.response
 		}
 	},
-	async deleteCountry({ commit }, coutry) {
+	async deleteCountries({ commit }, countries) {
 		try {
-			const response = await CountryService.deleteCountry(coutry)
+			const response = await CountryService.deleteCountries(countries)
 			// eslint-disable-next-line no-console
 			console.log("deleting the existsing country", response)
 			return { status: response.status }
 		} catch (error) {
 			commit("setError", { isError: true, errMsg: error.message })
 			// eslint-disable-next-line no-console
-			console.log("deleting the existsing country", error.response)
+			console.log("deleting the existsing country", error.message)
 			return error.response
 		}
 	},
@@ -82,5 +96,8 @@ export const getters = {
 	},
 	getTotalCountries(state) {
 		return state.totalCountries
+	},
+	getCountryCodes(state) {
+		return state.countries.map((country) => country.countryRegionCode)
 	},
 }

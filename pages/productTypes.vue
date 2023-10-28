@@ -20,7 +20,7 @@ import TableBuilder from "~/components/TableBuilder"
 import DynamicForm from "~/components/FormBuilder.vue"
 import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 export default {
-	name: "TablePage",
+	name: "ProductTypesPage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
@@ -54,8 +54,8 @@ export default {
 					{
 						type: "closeForm",
 						action: "close",
-						executeFunction: (resetForm) => {
-							this.closeForm(resetForm)
+						executeFunction: () => {
+							this.closeForm()
 						},
 					},
 				],
@@ -66,21 +66,27 @@ export default {
 				fields: [
 					{
 						type: "text",
-						label: "Country Name",
-						placeholder: "Country",
-						key: "countryRegionName",
+						label: "Master Category",
+						placeholder: "Master Category",
+						key: "masterCategory",
 						rules: ["required"],
 					},
 					{
 						type: "text",
-						label: "Country Code",
-						placeholder: "Country Code",
-						key: "countryRegionCode",
+						label: "Main Category",
+						placeholder: "Main Category",
+						key: "mainCategory",
+					},
+					{
+						type: "text",
+						label: "Sub Category",
+						placeholder: "Sub Category",
+						key: "subCategory",
 					},
 					{
 						type: "textArea",
 						label: "Note",
-						placeholder: "Country",
+						placeholder: "ProductType",
 						key: "notes",
 					},
 				],
@@ -97,8 +103,9 @@ export default {
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Country Name", value: "countryRegionName" },
-					{ text: "Country Code", value: "countryRegionCode" },
+					{ text: "Master Category", value: "masterCategory" },
+					{ text: "Main Category", value: "mainCategory" },
+					{ text: "Sub Category", value: "subCategory" },
 					{ text: "Note", value: "notes" },
 				],
 				tableData: [],
@@ -178,22 +185,27 @@ export default {
 	},
 	computed: {},
 	created() {
-		this.initializeCountryData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
+		this.initializeProductTypesData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
 	},
 
 	methods: {
-		...mapActions("country", ["fetchCountries", "addCountry", "deleteCountries", "updateCountry"]),
-		...mapGetters("country", ["getCountries", "getTotalCountries"]),
-		async initializeCountryData(params = { page: 0, docsPerPage: 10 }) {
+		...mapActions("productTypes", [
+			"fetchProductTypes",
+			"addProductType",
+			"deleteProductTypes",
+			"updateProductType",
+		]),
+		...mapGetters("productTypes", ["getProductTypes", "getTotalProductTypes"]),
+		async initializeProductTypesData(params = { page: 0, docsPerPage: 10 }) {
 			try {
-				const response = await this.fetchCountries(params)
+				const response = await this.fetchProductTypes(params)
 				if (response.status === 200) {
-					this.tableConfig.tableData = this.getCountries()
+					this.tableConfig.tableData = this.getProductTypes()
 					// eslint-disable-next-line no-console
 					console.log("initialized", this.tableConfig.tableData)
-					this.tableConfig.totalEntries = this.getTotalCountries()
+					this.tableConfig.totalEntries = this.getTotalProductTypes()
 				} else {
-					throw new Error("Failed to fetch countries data")
+					throw new Error("Failed to fetch ProductTypes data")
 				}
 			} catch (error) {
 				// eslint-disable-next-line no-console
@@ -208,7 +220,7 @@ export default {
 			console.log("onPageChange", val)
 			this.page = val
 			this.$nextTick(() => {
-				this.initializeCountryData({
+				this.initializeProductTypesData({
 					page: val - 1,
 					docsPerPage: this.itemsPerPage,
 				})
@@ -232,20 +244,19 @@ export default {
 			}
 			this.showForm = false
 		},
-		async addNewItem(country) {
+		async addNewItem(productType) {
 			try {
-				country.countryRegionName = this.firstLetterUpperCase(country.countryRegionName)
-				const response = await this.addCountry(country)
+				const response = await this.addProductType(productType)
 				if (response.status === 201) {
-					this.initializeCountryData({
+					this.initializeProductTypesData({
 						page: this.page - 1,
 						docsPerPage: this.itemsPerPage,
 					})
 				} else {
 					if (response.status === 400) {
-						throw new Error("This Country data is already exists")
+						throw new Error("This ProductType data is already exists")
 					}
-					throw new Error("Failed to add country data")
+					throw new Error("Failed to add productType data")
 				}
 			} catch (error) {
 				// eslint-disable-next-line no-console
@@ -254,18 +265,18 @@ export default {
 		},
 		async editItem(item) {
 			try {
-				const country = JSON.parse(JSON.stringify(item))
-				const response = await this.updateCountry(country)
+				const productType = JSON.parse(JSON.stringify(item))
+				const response = await this.updateProductType(productType)
 				if (response.status === 200) {
-					this.initializeCountryData({
+					this.initializeProductTypesData({
 						page: this.page - 1,
 						docsPerPage: this.itemsPerPage,
 					})
 				} else {
 					if (response.status === 400) {
-						throw new Error("This Country data is already exists")
+						throw new Error("This ProductType data is already exists")
 					}
-					throw new Error("Failed to add country data")
+					throw new Error("Failed to add productType data")
 				}
 			} catch (error) {
 				// eslint-disable-next-line no-console
@@ -294,20 +305,20 @@ export default {
 			this.formKey++
 		},
 		async deleteRecords(selectedItems) {
-			const selectedCountires = Array.isArray(selectedItems) ? selectedItems : [selectedItems]
+			const selectedProductTypes = Array.isArray(selectedItems) ? selectedItems : [selectedItems]
 			// eslint-disable-next-line no-console
-			console.log("my delete item", selectedCountires)
-			const countries = selectedCountires.map((country) => country._id)
+			console.log("my delete item", selectedProductTypes)
+			const productTypes = selectedProductTypes.map((productType) => productType._id)
 			try {
-				const response = await this.deleteCountries({ ids: countries })
+				const response = await this.deleteProductTypes({ ids: productTypes })
 				if (response.status === 204) {
 					this.page = 1
-					this.initializeCountryData({
+					this.initializeProductTypesData({
 						page: this.page - 1,
 						docsPerPage: this.itemsPerPage,
 					})
 				} else {
-					throw new Error("Failed to delete countries data")
+					throw new Error("Failed to delete productTypes data")
 				}
 			} catch (error) {
 				// eslint-disable-next-line no-console
