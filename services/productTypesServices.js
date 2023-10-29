@@ -1,27 +1,28 @@
 import servicesHelper from "~/services/servicesHelper"
 const basePath = "/productTypes"
+const baseNames = { singular: "ProductType", prural: "ProductTypes" }
 export default {
-	getProductTypes(params = { page: 0, docsPerPage: 10 }) {
+	[`get${baseNames.prural}`](params = { page: 0, docsPerPage: 10 }) {
 		// eslint-disable-next-line no-console
-		console.log("apiClient params get countries", params)
+		console.log("apiClient params get ", params)
 		return servicesHelper.getData(basePath, params)
 	},
-	getAllProductTypes() {
+	[`getAll${baseNames.prural}`]() {
 		// eslint-disable-next-line no-console
-		console.log("servicesHelper get all countries")
+		console.log("servicesHelper get all ")
 		return servicesHelper.getAllData(basePath)
 	},
-	postProductTypes(data) {
+	[`post${baseNames.singular}`](data) {
 		// eslint-disable-next-line no-console
-		console.log("servicesHelper postting country", data)
+		console.log("servicesHelper postting ", data)
 		return servicesHelper.postData(basePath, data)
 	},
-	updateProductType(data) {
+	[`update${baseNames.singular}`](data) {
 		// eslint-disable-next-line no-console
-		console.log("servicesHelper Updating country", data)
+		console.log("servicesHelper Updating ", data)
 		return servicesHelper.updateData(basePath, data)
 	},
-	deleteProductTypes(data) {
+	[`delete${baseNames.prural}`](data) {
 		// eslint-disable-next-line no-console
 		console.log("servicesHelper deleting countries", data)
 		return servicesHelper.deleteData(basePath, { data })

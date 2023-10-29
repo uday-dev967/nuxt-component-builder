@@ -27,8 +27,8 @@ export default {
 			}
 		},
 		async editRecord(item, updateAction) {
-			const country = JSON.parse(JSON.stringify(item))
-			const response = await updateAction(country)
+			const editedItem = JSON.parse(JSON.stringify(item))
+			const response = await updateAction(editedItem)
 			if (response.success) {
 				this.initializeTableData({
 					page: this.page - 1,

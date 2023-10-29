@@ -249,7 +249,7 @@ export default {
 			col: 6,
 			showPassword: false,
 			showPasswordIcon: true,
-			localFormData: this.data,
+			localFormData: JSON.parse(JSON.stringify(this.data)),
 			requiredRule: (v) =>
 				typeof v === "number" ? !!v ?? "This field is required" : !!v || "This field is required",
 			emailRules: [(v) => /.+@.+\..+/.test(v) || "Email must be valid"],

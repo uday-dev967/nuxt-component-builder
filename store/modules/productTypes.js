@@ -55,7 +55,4 @@ export const getters = {
 		console.log("from getter", state.productTypesData)
 		return state.productTypesData.productTypes
 	},
-	getProductTypeCodes(state) {
-		return state.productTypes.map((productTypes) => productTypes.productTypesRegionCode)
-	},
 }

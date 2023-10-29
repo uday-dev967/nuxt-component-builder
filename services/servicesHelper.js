@@ -19,7 +19,7 @@ export default {
 	updateData(path, data) {
 		// eslint-disable-next-line no-console
 		console.log("service helper updateData", path, data)
-		return apiClient.patch(`/countries/${data._id}`, data)
+		return apiClient.patch(`${path}/${data._id}`, data)
 	},
 	deleteData(path, data) {
 		// eslint-disable-next-line no-console

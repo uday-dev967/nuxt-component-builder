@@ -1,3 +1,14 @@
+const resolveError = function (error) {
+	if (error.response) {
+		if (error.response.status === 400) {
+			return { success: false, message: error.response.data.message }
+		}
+	} else if (error.request) {
+		return { success: false, message: "OOPS! Server seems dead" }
+	}
+	return { success: false, message: "OOPS! something went wrong" }
+}
+
 export async function fetchData(commit, service, payload, mutationTypes) {
 	try {
 		const response = await service(payload)
@@ -5,10 +16,7 @@ export async function fetchData(commit, service, payload, mutationTypes) {
 		commit(mutationTypes.setTotal, response.data.total)
 		return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
 	} catch (error) {
-		if (error.response.status === 400) {
-			return { success: false, message: error.response.data.message }
-		}
-		return { success: false, message: "OOPS! something went wrong" }
+		return resolveError(error)
 	}
 }
 
@@ -21,10 +29,7 @@ export async function fetchAllData(commit, service, mutationTypes) {
 		console.log("from country store actions", response)
 		return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
 	} catch (error) {
-		if (error.response.status === 400) {
-			return { success: false, message: error.response.data.message }
-		}
-		return { success: false, message: "OOPS! something went wrong" }
+		return resolveError(error)
 	}
 }
 
@@ -35,10 +40,7 @@ export async function addItem(service, payload) {
 		console.log("posting the new country", response)
 		return { success: true, message: "New Item is Added successfully" }
 	} catch (error) {
-		if (error.response.status === 400) {
-			return { success: false, message: error.response.data.message }
-		}
-		return { success: false, message: "OOPS! something went wrong" }
+		return resolveError(error)
 	}
 }
 
@@ -49,10 +51,7 @@ export async function updateItem(service, payload) {
 		console.log("updating the existsing country", response)
 		return { success: true, message: "Item Updated Successfully" }
 	} catch (error) {
-		if (error.response.status === 400) {
-			return { success: false, message: error.response.data.message }
-		}
-		return { success: false, message: "OOPS! something went wrong" }
+		return resolveError(error)
 	}
 }
 
@@ -63,11 +62,6 @@ export async function deleteItems(service, payload) {
 		console.log("deleting the existsing country", response)
 		return { success: true, message: "Item Deleted Successfully" }
 	} catch (error) {
-		// eslint-disable-next-line no-console
-		console.log("error response", error.response)
-		if (error.response.status === 400) {
-			return { success: false, message: error.response.data.message }
-		}
-		return { success: false, message: "OOPS! something went wrong" }
+		return resolveError(error)
 	}
 }
