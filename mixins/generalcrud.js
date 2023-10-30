@@ -3,7 +3,7 @@ export default {
 		setSnackBar(message, color) {
 			this.$refs.snackbar.showSnackbar(message, color)
 		},
-		async initializeData(fetchAction, dataGetter, params = { page: 0, docsPerPage: 10 }) {
+		async initializeData(fetchAction, dataGetter, params = { pageNo: 0, docsPerPage: 10 }) {
 			const response = await fetchAction(params)
 			if (response.success) {
 				this.tableConfig.tableData = dataGetter()
@@ -43,20 +43,19 @@ export default {
 			const selectedItems = Array.isArray(records) ? records : [records]
 			// eslint-disable-next-line no-console
 			console.log("my delete item", selectedItems)
-			const UserConfirm = window.confirm("Are you sure you want to DELETE")
+
 			const items = selectedItems.map((item) => item._id)
-			if (UserConfirm) {
-				const response = await deleteAction({ ids: items })
-				if (response.success) {
-					this.page = 1
-					this.initializeTableData({
-						page: this.page - 1,
-						docsPerPage: this.itemsPerPage,
-					})
-					this.setSnackBar(response.message, "success")
-				} else {
-					this.setSnackBar(response.message, "error")
-				}
+
+			const response = await deleteAction({ ids: items })
+			if (response.success) {
+				this.page = 1
+				this.initializeTableData({
+					page: this.page - 1,
+					docsPerPage: this.itemsPerPage,
+				})
+				this.setSnackBar(response.message, "success")
+			} else {
+				this.setSnackBar(response.message, "error")
 			}
 		},
 		addNewItem(item) {

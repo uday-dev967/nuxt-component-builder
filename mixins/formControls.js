@@ -1,6 +1,76 @@
 export default {
 	data() {
 		return {
+			pagination: {
+				onPageChange: (val) => {
+					this.pageChange(val)
+				},
+			},
+			actions: {
+				items: [
+					{
+						icon: "mdi-pencil",
+						title: "Edit",
+						executeFunction: (item) => {
+							this.openEditForm(item)
+						},
+					},
+					{
+						icon: "mdi-delete",
+						title: "Delete",
+						executeFunction: (item) => {
+							this.deleteRecords(item)
+						},
+					},
+				],
+			},
+			topBarConfig: {
+				fields: [
+					{
+						type: "combobox",
+						disable: false,
+						label: "Show",
+						fieldType: "number",
+						key: "itemsPerPage",
+						items: [5, 10, 20],
+						relatedTo: "pagination",
+						executeFunction: (val) => {
+							this.changeItemsPerPage(val)
+						},
+					},
+					{ type: "text", disable: false, placeHolder: "", label: "search", key: "searchInput" },
+					{ type: "spacer", col: 5 },
+					{
+						type: "button",
+						color: "primary",
+						disable: true,
+						icon: "mdi-delete",
+						action: "delete",
+						executeFunction: (selectedItems) => {
+							this.deleteRecords(selectedItems)
+						},
+					},
+					{ type: "button", color: "primary", disable: true, icon: "mdi-export", action: "export" },
+					{
+						type: "button",
+						color: "primary",
+						disable: true,
+						icon: "mdi-import",
+						action: "Import",
+					},
+					{
+						type: "slotActivatorBtn",
+						color: "primary",
+						disable: false,
+						icon: "mdi-plus",
+						action: "Add",
+						executeFunction: () => {
+							// eslint-disable-next-line no-console
+							this.openAddNewForm()
+						},
+					},
+				],
+			},
 			showForm: false,
 			itemsPerPage: 5,
 			page: 1,
@@ -41,7 +111,7 @@ export default {
 			this.page = val
 			this.$nextTick(() => {
 				this.initializeTableData({
-					page: val - 1,
+					pageNo: val - 1,
 					docsPerPage: this.itemsPerPage,
 				})
 			})

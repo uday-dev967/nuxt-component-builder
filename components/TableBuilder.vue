@@ -17,7 +17,7 @@
 			<template #top>
 				<v-toolbar flat>
 					<v-row class="mt-2">
-						<v-col v-for="(field, index) in tableConfig.topBarConfig.fields" :key="index">
+						<v-col v-for="(field, index) in topBarConfig.fields" :key="index">
 							<v-text-field
 								v-if="field.type === 'text'"
 								v-model="localInputData[field.key]"
@@ -98,7 +98,7 @@
 					</template>
 					<v-list>
 						<v-list-item
-							v-for="(action, index) in tableConfig.actions.items"
+							v-for="(action, index) in actions.items"
 							:key="index"
 							@click="performAction(item, action)"
 						>
@@ -125,6 +125,18 @@ export default {
 		showForm: {
 			type: Boolean,
 			default: false,
+		},
+		topBarConfig: {
+			type: Object,
+			required: true,
+		},
+		pagination: {
+			type: Object,
+			required: true,
+		},
+		actions: {
+			type: Object,
+			required: true,
 		},
 	},
 	data() {
@@ -172,9 +184,14 @@ export default {
 			return false
 		},
 		performAction(item, action) {
-			action.executeFunction(item)
 			if (action.title === "Delete") {
-				this.changeItemsPerPage(this.localInputData.itemsPerPage)
+				const UserConfirm = window.confirm("Are you sure you want to DELETE")
+				if (UserConfirm) {
+					action.executeFunction(item)
+					this.changeItemsPerPage(this.localInputData.itemsPerPage)
+				}
+			} else {
+				action.executeFunction(item)
 			}
 		},
 		applyDependency(event, field) {
@@ -191,14 +208,19 @@ export default {
 		},
 
 		multiSelectButtonFuntion(button) {
-			button.executeFunction(this.localInputData.selected)
 			if (button.action === "delete") {
-				this.changeItemsPerPage(this.localInputData.itemsPerPage)
+				const UserConfirm = window.confirm("Are you sure you want to DELETE")
+				if (UserConfirm) {
+					button.executeFunction(this.localInputData.selected)
+					this.changeItemsPerPage(this.localInputData.itemsPerPage)
+				}
+			} else {
+				button.executeFunction(this.localInputData.selected)
 			}
 			this.localInputData.selected = []
 		},
 		changePage(event) {
-			this.tableConfig.pagination.onPageChange(event)
+			this.pagination.onPageChange(event)
 		},
 	},
 }

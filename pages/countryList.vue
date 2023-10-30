@@ -1,7 +1,13 @@
 <template>
 	<div>
 		<h1>Table Page Example</h1>
-		<table-builder :table-config="tableConfig" :show-form="showForm">
+		<table-builder
+			:table-config="tableConfig"
+			:top-bar-config="topBarConfig"
+			:pagination="pagination"
+			:show-form="showForm"
+			:actions="actions"
+		>
 			<template slot="addForm">
 				<dynamic-form
 					:key="formKey"
@@ -67,88 +73,18 @@ export default {
 				],
 				tableData: [],
 				totalEntries: 0,
-				topBarConfig: {
-					fields: [
-						{
-							type: "combobox",
-							disable: false,
-							label: "Show",
-							fieldType: "number",
-							key: "itemsPerPage",
-							items: [5, 10, 20],
-							relatedTo: "pagination",
-							executeFunction: (val) => {
-								this.changeItemsPerPage(val)
-							},
-						},
-						{ type: "text", disable: false, placeHolder: "", label: "search", key: "searchInput" },
-						{ type: "spacer", col: 5 },
-						{
-							type: "button",
-							color: "primary",
-							disable: true,
-							icon: "mdi-delete",
-							action: "delete",
-							executeFunction: (selectedItems) => {
-								this.deleteRecords(selectedItems)
-							},
-						},
-						{ type: "button", color: "primary", disable: true, icon: "mdi-export", action: "export" },
-						{
-							type: "button",
-							color: "primary",
-							disable: true,
-							icon: "mdi-import",
-							action: "Import",
-						},
-						{
-							type: "slotActivatorBtn",
-							color: "primary",
-							disable: false,
-							icon: "mdi-plus",
-							action: "Add",
-							executeFunction: () => {
-								// eslint-disable-next-line no-console
-								this.openAddNewForm()
-							},
-						},
-					],
-				},
-				actions: {
-					items: [
-						{
-							icon: "mdi-pencil",
-							title: "Edit",
-							executeFunction: (item) => {
-								this.openEditForm(item)
-							},
-						},
-						{
-							icon: "mdi-delete",
-							title: "Delete",
-							executeFunction: (item) => {
-								this.deleteRecords(item)
-							},
-						},
-					],
-				},
-				pagination: {
-					onPageChange: (val) => {
-						this.pageChange(val)
-					},
-				},
 			},
 		}
 	},
 	computed: {},
 	created() {
-		this.initializeTableData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
+		this.initializeTableData({ pageNo: this.page - 1, docsPerPage: this.itemsPerPage })
 	},
 
 	methods: {
 		...mapActions("country", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("country", ["getCountries", "getTotalCountries"]),
-		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
+		initializeTableData(params = { pageNo: 0, docsPerPage: 10 }) {
 			this.initializeData(this.fetchTableData, this.getCountries, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
