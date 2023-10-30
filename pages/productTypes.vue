@@ -49,12 +49,14 @@ export default {
 						label: "Main Category",
 						placeholder: "Main Category",
 						key: "mainCategory",
+						rules: ["required"],
 					},
 					{
 						type: "text",
 						label: "Sub Category",
 						placeholder: "Sub Category",
 						key: "subCategory",
+						rules: ["required"],
 					},
 					{
 						type: "textArea",
@@ -162,27 +164,12 @@ export default {
 	},
 
 	methods: {
-		...mapActions("productTypes", [
-			"fetchProductTypes",
-			"addProductType",
-			"deleteProductTypes",
-			"updateProductType",
-		]),
+		...mapActions("productTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("productTypes", ["getProductTypes", "getTotalProductTypes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			this.initializeData(this.fetchProductTypes, this.getProductTypes, params)
+			this.initializeData(this.fetchTableData, this.getProductTypes, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
-		},
-		addNewItem(productType) {
-			this.addItem(productType, this.addProductType)
-		},
-		editItem(item) {
-			this.editRecord(item, this.updateProductType)
-		},
-
-		deleteRecords(selectedItems) {
-			this.deleteItems(selectedItems, this.deleteProductTypes)
 		},
 	},
 }

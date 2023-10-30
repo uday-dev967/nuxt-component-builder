@@ -49,22 +49,13 @@ export default {
 						label: "Country Code",
 						placeholder: "Country Code",
 						key: "countryRegionCode",
+						rules: ["required"],
 					},
 					{
 						type: "textArea",
 						label: "Note",
 						placeholder: "Country",
 						key: "notes",
-					},
-				],
-				buttons: [
-					{ type: "submit", action: "add", color: "primary" },
-					{
-						type: "closeForm",
-						action: "close",
-						executeFunction: () => {
-							this.closeForm()
-						},
 					},
 				],
 			},
@@ -155,23 +146,12 @@ export default {
 	},
 
 	methods: {
-		...mapActions("country", ["fetchCountries", "addCountry", "deleteCountries", "updateCountry"]),
+		...mapActions("country", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("country", ["getCountries", "getTotalCountries"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			this.initializeData(this.fetchCountries, this.getCountries, params)
+			this.initializeData(this.fetchTableData, this.getCountries, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
-		},
-
-		addNewItem(country) {
-			this.addItem(country, this.addCountry)
-		},
-		editItem(item) {
-			this.editRecord(item, this.updateCountry)
-		},
-
-		deleteRecords(selectedItems) {
-			this.deleteItems(selectedItems, this.deleteCountries)
 		},
 	},
 }

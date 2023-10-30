@@ -59,5 +59,15 @@ export default {
 				}
 			}
 		},
+		addNewItem(item) {
+			this.addItem(item, this.addTableData)
+		},
+		editItem(item) {
+			this.editRecord(item, this.updateTableData)
+		},
+
+		deleteRecords(selectedItems) {
+			this.deleteItems(selectedItems, this.deleteTableData)
+		},
 	},
 }

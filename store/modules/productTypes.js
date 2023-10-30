@@ -6,10 +6,7 @@ const mutationTypes = {
 	setTotal: "setTotalProductTypes",
 }
 
-const baseNames = {
-	singular: "ProductType",
-	prural: "ProductTypes",
-}
+const baseName = "ProductTypes"
 
 export const namespaced = true
 
@@ -31,21 +28,21 @@ export const mutations = {
 }
 
 export const actions = {
-	fetchProductTypes({ commit }, params) {
-		return fetchData(commit, ApiService[`get${baseNames.prural}`], params, mutationTypes)
+	fetchTableData({ commit }, params) {
+		return fetchData(commit, ApiService[`get${baseName}`], params, mutationTypes)
 	},
-	fetchAllProductTypes({ commit }) {
-		return fetchAllData(commit, ApiService[`getAll${baseNames.prural}`], mutationTypes)
+	fetchAllRecords({ commit }) {
+		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes)
 	},
 
-	addProductType({ commit }, data) {
-		return addItem(ApiService[`post${baseNames.singular}`], data)
+	addTableData({ commit }, data) {
+		return addItem(ApiService[`post${baseName}`], data)
 	},
-	updateProductType({ commit }, data) {
-		return updateItem(ApiService[`update${baseNames.singular}`], data)
+	updateTableData({ commit }, data) {
+		return updateItem(ApiService[`update${baseName}`], data)
 	},
-	deleteProductTypes({ commit }, data) {
-		return deleteItems(ApiService[`delete${baseNames.prural}`], data)
+	deleteTableData({ commit }, data) {
+		return deleteItems(ApiService[`delete${baseName}`], data)
 	},
 }
 

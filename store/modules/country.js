@@ -6,10 +6,7 @@ const mutationTypes = {
 	setTotal: "setTotalCountries",
 }
 
-const baseNames = {
-	singular: "Country",
-	prural: "Countries",
-}
+const baseName = "Countries"
 
 export const namespaced = true
 
@@ -29,12 +26,12 @@ export const mutations = {
 	},
 }
 export const actions = {
-	fetchCountries({ commit }, params) {
-		return fetchData(commit, ApiService[`get${baseNames.prural}`], params, mutationTypes)
+	fetchTableData({ commit }, params) {
+		return fetchData(commit, ApiService[`get${baseName}`], params, mutationTypes)
 	},
 
-	fetchAllCountries({ commit }) {
-		return fetchAllData(commit, ApiService[`getAll${baseNames.prural}`], mutationTypes)
+	fetchAllRecords({ commit }) {
+		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes)
 
 		// try {
 		// 	const response = await ApiService.getAllCountries()
@@ -51,8 +48,8 @@ export const actions = {
 		// }
 	},
 
-	addCountry({ commit }, country) {
-		return addItem(ApiService[`post${baseNames.singular}`], country)
+	addTableData({ commit }, country) {
+		return addItem(ApiService[`post${baseName}`], country)
 		// try {
 		// 	const response = await ApiService.postCountry(country)
 		// 	// eslint-disable-next-line no-console
@@ -65,8 +62,8 @@ export const actions = {
 		// 	return { success: false, message: "OOPS! something went wrong" }
 		// }
 	},
-	updateCountry({ commit }, country) {
-		return updateItem(ApiService[`update${baseNames.singular}`], country)
+	updateTableData({ commit }, country) {
+		return updateItem(ApiService[`update${baseName}`], country)
 		// try {
 		// 	const response = await ApiService.updateCountry(country)
 		// 	// eslint-disable-next-line no-console
@@ -79,8 +76,8 @@ export const actions = {
 		// 	return { success: false, message: "OOPS! something went wrong" }
 		// }
 	},
-	deleteCountries({ commit }, countries) {
-		return deleteItems(ApiService[`delete${baseNames.prural}`], countries)
+	deleteTableData({ commit }, countries) {
+		return deleteItems(ApiService[`delete${baseName}`], countries)
 		// try {
 		// 	const response = await ApiService.deleteCountries(countries)
 		// 	// eslint-disable-next-line no-console

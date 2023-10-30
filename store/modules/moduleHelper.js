@@ -13,7 +13,7 @@ export async function fetchData(commit, service, payload, mutationTypes) {
 	try {
 		const response = await service(payload)
 		commit(mutationTypes.setData, response.data)
-		commit(mutationTypes.setTotal, response.data.total)
+
 		return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
 	} catch (error) {
 		return resolveError(error)
@@ -23,7 +23,7 @@ export async function fetchData(commit, service, payload, mutationTypes) {
 export async function fetchAllData(commit, service, mutationTypes) {
 	try {
 		const response = await service()
-		commit(mutationTypes.setData, response.data.countries)
+		commit(mutationTypes.setData, response.data)
 		commit(mutationTypes.setTotal, response.data.total)
 		// eslint-disable-next-line no-console
 		console.log("from country store actions", response)
