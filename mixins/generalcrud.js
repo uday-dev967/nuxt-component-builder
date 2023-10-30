@@ -3,7 +3,7 @@ export default {
 		setSnackBar(message, color) {
 			this.$refs.snackbar.showSnackbar(message, color)
 		},
-		async initializeData(fetchAction, dataGetter, params = { pageNo: 0, docsPerPage: 10 }) {
+		async initializeData(fetchAction, dataGetter, params = { page: 0, docsPerPage: 10 }) {
 			const response = await fetchAction(params)
 			if (response.success) {
 				this.tableConfig.tableData = dataGetter()

@@ -13,7 +13,8 @@ export async function fetchData(commit, service, payload, mutationTypes) {
 	try {
 		const response = await service(payload)
 		commit(mutationTypes.setData, response.data)
-
+		// eslint-disable-next-line no-console
+		console.log("from module helper", service, payload, mutationTypes)
 		return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
 	} catch (error) {
 		return resolveError(error)

@@ -111,7 +111,7 @@ export default {
 			this.page = val
 			this.$nextTick(() => {
 				this.initializeTableData({
-					pageNo: val - 1,
+					page: val - 1,
 					docsPerPage: this.itemsPerPage,
 				})
 			})

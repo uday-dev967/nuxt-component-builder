@@ -30,7 +30,7 @@ import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
 import SnackBar from "~/components/SnackBar.vue"
 export default {
-	name: "TablePage",
+	name: "MaterialTypesPage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
@@ -45,30 +45,30 @@ export default {
 				fields: [
 					{
 						type: "text",
-						label: "Country Name",
-						placeholder: "Country",
-						key: "countryRegionName",
+						label: "Material Type Name",
+						placeholder: "Material Type Name",
+						key: "materialTypeName",
 						rules: ["required"],
 					},
 					{
 						type: "text",
-						label: "Country Code",
-						placeholder: "Country Code",
-						key: "countryRegionCode",
+						label: "Material Type Code",
+						placeholder: "Material Type Code",
+						key: "materialTypeCode",
 						rules: ["required"],
 					},
 					{
 						type: "textArea",
 						label: "Note",
-						placeholder: "Country",
+						placeholder: "ProductType",
 						key: "notes",
 					},
 				],
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Country Name", value: "countryRegionName" },
-					{ text: "Country Code", value: "countryRegionCode" },
+					{ text: "Material Type Name", value: "materialTypeName" },
+					{ text: "Material Type Code", value: "materialTypeCode" },
 					{ text: "Note", value: "notes" },
 				],
 				tableData: [],
@@ -82,10 +82,10 @@ export default {
 	},
 
 	methods: {
-		...mapActions("country", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
-		...mapGetters("country", ["getCountries", "getTotalCountries"]),
+		...mapActions("materialTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
+		...mapGetters("materialTypes", ["getMaterialTypes", "getTotalMaterialTypes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			this.initializeData(this.fetchTableData, this.getCountries, params)
+			this.initializeData(this.fetchTableData, this.getMaterialTypes, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},

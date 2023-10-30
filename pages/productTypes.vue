@@ -86,13 +86,13 @@ export default {
 	},
 	computed: {},
 	created() {
-		this.initializeTableData({ pageNo: this.page - 1, docsPerPage: this.itemsPerPage })
+		this.initializeTableData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
 	},
 
 	methods: {
 		...mapActions("productTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("productTypes", ["getProductTypes", "getTotalProductTypes"]),
-		initializeTableData(params = { pageNo: 0, docsPerPage: 10 }) {
+		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			this.initializeData(this.fetchTableData, this.getProductTypes, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
