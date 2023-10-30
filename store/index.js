@@ -1,6 +1,7 @@
 import * as country from "@/store/modules/country.js"
 import * as productTypes from "~/store/modules/productTypes.js"
 import * as materialTypes from "~/store/modules/materialTypes.js"
+import * as connectionTypes from "~/store/modules/connectionTypes.js"
 
 export default {
 	state() {
@@ -13,5 +14,6 @@ export default {
 		country,
 		productTypes,
 		materialTypes,
+		connectionTypes,
 	},
 }

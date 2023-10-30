@@ -30,7 +30,7 @@ import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
 import SnackBar from "~/components/SnackBar.vue"
 export default {
-	name: "MaterialTypesPage",
+	name: "ConnectionTypesPage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
@@ -45,24 +45,24 @@ export default {
 				fields: [
 					{
 						type: "text",
-						label: "Material Type Name",
-						placeholder: "Material Type Name",
-						key: "materialTypeName",
+						label: "Connection Type Name",
+						placeholder: "Connection Type Name",
+						key: "connectionTypeName",
 						rules: ["required"],
 					},
 					{
 						type: "text",
-						label: "Material Type Code",
-						placeholder: "Material Type Code",
-						key: "materialTypeCode",
+						label: "Connection Type Code",
+						placeholder: "Connection Type Code",
+						key: "connectionTypeCode",
 						rules: ["required"],
 					},
 				],
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Material Type Name", value: "materialTypeName" },
-					{ text: "Material Type Code", value: "materialTypeCode" },
+					{ text: "Connection Type Name", value: "connectionTypeName" },
+					{ text: "Connection Type Code", value: "connectionTypeCode" },
 				],
 				tableData: [],
 				totalEntries: 0,
@@ -75,10 +75,10 @@ export default {
 	},
 
 	methods: {
-		...mapActions("materialTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
-		...mapGetters("materialTypes", ["getMaterialTypes", "getTotalMaterialTypes"]),
+		...mapActions("connectionTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
+		...mapGetters("connectionTypes", ["getConnectionTypes", "getTotalConnectionTypes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			this.initializeData(this.fetchTableData, this.getMaterialTypes, params)
+			this.initializeData(this.fetchTableData, this.getConnectionTypes, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},

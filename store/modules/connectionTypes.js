@@ -1,8 +1,8 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
-import ApiService from "~/services/materialTypesServices.js"
+import ApiService from "~/services/connectionTypesServices.js"
 
-const baseName = "MaterialTypes"
-const _baseName = "materialTypes"
+const baseName = "ConnectionTypes"
+const _baseName = "connectionTypes"
 const mutationTypes = {
 	setData: `set${baseName}Data`,
 	setTotal: `setTotal${baseName}`,
@@ -50,6 +50,6 @@ export const getters = {
 	[`get${baseName}`](state) {
 		// eslint-disable-next-line no-console
 		console.log("from getter", state[`${_baseName}Data`])
-		return state[`${_baseName}Data`][`${_baseName}Data`]
+		return state[`${_baseName}Data`][`${"connections"}Data`]
 	},
 }
