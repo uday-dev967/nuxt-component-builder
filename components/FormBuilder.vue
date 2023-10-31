@@ -230,10 +230,11 @@
 </template>
 
 <script>
+import _ from "lodash"
 export default {
 	name: "FormBuilder",
 	props: {
-		config: {
+		formConfig: {
 			type: Object,
 			required: true,
 		},
@@ -267,6 +268,7 @@ export default {
 			asyncvalue: "",
 			refsKeyList: {},
 			asyncList: {},
+			config: {},
 		}
 	},
 	computed: {
@@ -287,6 +289,9 @@ export default {
 			return false
 		},
 	},
+	created() {
+		this.config = _.cloneDeep(this.formConfig)
+	},
 	mounted() {
 		// eslint-disable-next-line no-console
 		console.log(this.data)
@@ -295,6 +300,9 @@ export default {
 				this.asyncList[field.key] = field.items || []
 				this.initalizeAsyncListKey(field)
 				this.initalizeRefKey(field.key)
+			}
+			if (field.dependency) {
+				this.applyDependency(field)
 			}
 		})
 	},
@@ -316,8 +324,10 @@ export default {
 		},
 		applyDependency(field) {
 			if (field.dependency) {
-				field.dependency(this.data)
+				field.dependency(this.config, this.localFormData)
 			}
+			// eslint-disable-next-line no-console
+			console.log(this.localFormData)
 		},
 		initalizeAsyncListKey(field) {
 			const items = field.items || []

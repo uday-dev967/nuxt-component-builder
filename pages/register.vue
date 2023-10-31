@@ -1,12 +1,13 @@
 <template>
 	<div class="mt-8">
 		<h2>Register Form</h2>
-		<dynamic-form :config="config" :data="formData" @form-submitted="register"></dynamic-form>
+		<dynamic-form :form-config="config" :data="formData" @form-submitted="register"></dynamic-form>
 	</div>
 </template>
 
 <script>
 import axios from "axios"
+import { mapActions, mapGetters } from "vuex"
 import DynamicForm from "~/components/FormBuilder.vue" // Adjust the path as needed
 
 export default {
@@ -26,8 +27,8 @@ export default {
 				birthdate: null,
 				favoriteDates: [],
 				vacationDates: [],
-				unitType: null,
-				pipeSizes: [],
+				unitType: { id: 1, value: "imperial" },
+				pipeSizes: [{ id: 1, value: "1/8" }],
 			},
 
 			config: {
@@ -146,9 +147,8 @@ export default {
 						switchColor: "orange",
 						key: "isFavouritesCitiesEnable",
 						refField: "favouriteCities",
-						dependencyStatus: true,
-						dependency: (formdata) => {
-							this.dependecySwitchLock(formdata, "isFavouritesCitiesEnable")
+						dependency: (configObj, formdata) => {
+							this.dependencySwitchLock(configObj, formdata, "isFavouritesCitiesEnable")
 						},
 					},
 					{
@@ -170,8 +170,8 @@ export default {
 						key: "isFavouriteSportsEnable",
 						refField: "favouriteCities",
 						dependencyStatus: true,
-						dependency: (formdata) => {
-							this.dependecySwitchLock(formdata, "isFavouriteSportsEnable")
+						dependency: (configObj, formdata) => {
+							this.dependencySwitchLock(configObj, formdata, "isFavouriteSportsEnable")
 						},
 					},
 					{
@@ -233,6 +233,51 @@ export default {
 					},
 					{
 						type: "combobox",
+						label: "Identify By",
+						items: [
+							{ id: 1, value: "Country Name", getter: this.getCountryNames },
+							{ id: 2, value: "Country Code", getter: this.getCountryCodes },
+						],
+						key: "identifyCountryBy",
+						disable: false,
+						refField: "countries",
+						dependency: function (configObj, formdata) {
+							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+							// eslint-disable-next-line no-console
+							console.log(this.key, formdata[this.key], formdata)
+							dependentObj.items = []
+							if (formdata[this.key]) {
+								// eslint-disable-next-line no-console
+								dependentObj.disable = false
+								dependentObj.items = formdata[this.key].getter()
+							} else {
+								dependentObj.disable = true
+							}
+							// eslint-disable-next-line no-console
+							console.log("identifyCountryBy outside", dependentObj)
+						},
+					},
+					{
+						type: "autocomplete",
+						label: "Fetch Countries",
+						items: [],
+						getter: null,
+						key: "countries",
+						refField: "identifyCountryBy",
+						isLoading: false,
+						dependency: function (configObj, formdata) {
+							// eslint-disable-next-line no-console
+							console.log("pipe sizes", configObj)
+							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+							if (!formdata[this.key] || formdata[this.key]?.length === 0) {
+								dependentObj.disable = false
+							} else {
+								dependentObj.disable = true
+							}
+						},
+					},
+					{
+						type: "combobox",
 						label: "unit type",
 						items: [
 							{ id: 1, value: "imperial" },
@@ -241,13 +286,18 @@ export default {
 						key: "unitType",
 						disable: false,
 						refField: "pipeSizes",
-						dependencyStatus: true,
-						dependency: function (formdata) {
-							const dependentObj = this.config.fields.find((field) => field.refField === this.key)
+						dependency: function (configObj, formdata) {
+							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+							// eslint-disable-next-line no-console
+							console.log(this.key, formdata[this.key], formdata)
 							if (formdata[this.key] !== null) {
+								// eslint-disable-next-line no-console
+								console.log("unit type", "not null")
 								dependentObj.disable = false
 								dependentObj.items = dependentObj.itemsObj[formdata[this.key].value]
 							}
+							// eslint-disable-next-line no-console
+							console.log("unit type", dependentObj)
 						},
 					},
 					{
@@ -271,8 +321,10 @@ export default {
 						disable: true,
 						refField: "unitType",
 						dependencyStatus: true,
-						dependency: function (formdata) {
-							const dependentObj = this.config.fields.find((field) => field.refField === this.key)
+						dependency: function (configObj, formdata) {
+							// eslint-disable-next-line no-console
+							console.log("pipe sizes", configObj)
+							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
 							if (formdata[this.key].length === 0) {
 								dependentObj.disable = false
 							} else {
@@ -291,7 +343,21 @@ export default {
 			},
 		}
 	},
+	mounted() {
+		this.initializeData()
+	},
 	methods: {
+		...mapActions("country", ["fetchAllRecords"]),
+		...mapGetters("country", ["getCountryCodes", "getCountryNames"]),
+		async initializeData() {
+			const response = await this.fetchAllRecords()
+			if (response.success) {
+				// eslint-disable-next-line no-console
+				console.log("initialized", response.totalEntries)
+			} else {
+				this.setSnackBar(response.message, "error")
+			}
+		},
 		login(formData) {
 			// eslint-disable-next-line no-console
 			console.log("Login form submitted with data:", formData)
@@ -306,8 +372,8 @@ export default {
 			console.log(first)
 			// Handle registration logic here
 		},
-		dependecySwitchLock(formdata, key) {
-			const dependentObj = this.config.fields.find((field) => field.refField === key)
+		dependencySwitchLock(configObj, formdata, key) {
+			const dependentObj = configObj.fields.find((field) => field.refField === key)
 			if (formdata[key]) {
 				dependentObj.disable = true
 			} else {

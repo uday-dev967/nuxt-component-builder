@@ -11,7 +11,7 @@
 			<template slot="addForm">
 				<dynamic-form
 					:key="formKey"
-					:config="formConfig"
+					:form-config="formConfig"
 					:data="formData"
 					@form-submitted="formSubmission"
 				></dynamic-form>
