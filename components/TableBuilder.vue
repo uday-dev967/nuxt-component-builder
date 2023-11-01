@@ -142,6 +142,7 @@ export default {
 	data() {
 		return {
 			page: 1,
+			dialog: false,
 			searchInput: "",
 			col: 1,
 			localInputData: {
@@ -153,10 +154,8 @@ export default {
 			localHeader: [...this.tableConfig.headers, { text: "Actions", value: "actions", sortable: false }],
 		}
 	},
+
 	computed: {
-		dialog() {
-			return this.showForm
-		},
 		getPageCount() {
 			return Math.ceil(this.tableConfig.totalEntries / (this.localInputData.itemsPerPage || 10))
 		},
@@ -171,6 +170,14 @@ export default {
 					? Math.min(1, this.tableConfig.totalEntries)
 					: (this.localInputData.page - 1) * this.localInputData.itemsPerPage + 1
 			}  to ${totalPageEntry} of ${this.tableConfig.totalEntries}`
+		},
+	},
+	watch: {
+		showForm(newValue) {
+			this.dialog = newValue
+		},
+		dialog(newValue) {
+			this.$emit("input", newValue) // Emitting changes to the parent
 		},
 	},
 	created() {

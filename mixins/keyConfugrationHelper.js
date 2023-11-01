@@ -23,6 +23,12 @@ export default {
 							{ id: "number", value: "Number" },
 						],
 						key: "type",
+						rules: ["required"],
+					},
+					{
+						type: "switch",
+						label: "Manidatory",
+						key: "maidatory",
 					},
 					{
 						type: "textArea",
@@ -34,7 +40,7 @@ export default {
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Discription", value: "connectionTypeName" },
+					{ text: "Description", value: "connectionTypeName" },
 					{ text: "Type", value: "connectionTypeCode" },
 					{ text: "Note", value: "notes" },
 				],

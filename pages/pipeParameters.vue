@@ -20,7 +20,6 @@
 		<snack-bar ref="snackbar"></snack-bar>
 	</div>
 </template>
-
 <script>
 import { mapActions, mapGetters } from "vuex"
 import TableBuilder from "~/components/TableBuilder"
