@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1>Manufacturer List</h1>
+		<h1>Master Pipe List</h1>
 		<table-builder
 			:table-config="tableConfig"
 			:top-bar-config="topBarConfig"
@@ -30,7 +30,7 @@ import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
 import SnackBar from "~/components/SnackBar.vue"
 export default {
-	name: "ManufacturerListPage",
+	name: "MasterPipeListPage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
@@ -45,24 +45,56 @@ export default {
 				fields: [
 					{
 						type: "text",
-						label: "Connection Type Name",
-						placeholder: "Connection Type Name",
-						key: "connectionTypeName",
+						label: "Imperial Display Text",
+						placeholder: "Imperial Display Text",
+						key: "imperialText",
 						rules: ["required"],
 					},
 					{
 						type: "text",
-						label: "Connection Type Code",
-						placeholder: "Connection Type Code",
-						key: "connectionTypeCode",
+						label: "Metric Display Text",
+						placeholder: "Metric Display Text",
+						key: "metricText",
+						rules: ["required"],
+					},
+					{
+						type: "text",
+						label: "DN Size",
+						placeholder: "DN Size",
+						key: "dnSize",
+						rules: ["required"],
+					},
+					{
+						type: "number",
+						label: "Outer Diameter(Inches)",
+						placeholder: "Outer Diameter(Inches)",
+						key: "odInches",
+						rules: ["required"],
+						refField: "odMm",
+						dependency: function (configObj, formdata) {
+							if (formdata[this.key]) {
+								formdata[this.refField] = Math.floor(Number(formdata[this.key]) * 25.4)
+							} else {
+								formdata[this.refField] = 0
+							}
+						},
+					},
+					{
+						type: "text",
+						label: "Outer Diameter(mm)",
+						placeholder: "Outer Diameter(mm)",
+						key: "odMm",
 						rules: ["required"],
 					},
 				],
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Connection Type Name", value: "connectionTypeName" },
-					{ text: "Connection Type Code", value: "connectionTypeCode" },
+					{ text: "Imperial Display Text", value: "imperialText" },
+					{ text: "Metric Display Text", value: "metricText" },
+					{ text: "DN Size", value: "dnSize" },
+					{ text: "Outer Diameter(Inches)", value: "odInches" },
+					{ text: "Outer Diameter(mm)", value: "odMm" },
 				],
 				tableData: [],
 				totalEntries: 0,
@@ -75,10 +107,10 @@ export default {
 	},
 
 	methods: {
-		...mapActions("connectionTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
-		...mapGetters("connectionTypes", ["getConnectionTypes", "getTotalConnectionTypes"]),
+		...mapActions("masterPipe", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
+		...mapGetters("masterPipe", ["getMasterPipes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			this.initializeData(this.fetchTableData, this.getConnectionTypes, params)
+			this.initializeData(this.fetchTableData, this.getMasterPipes, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},

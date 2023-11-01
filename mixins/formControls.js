@@ -124,13 +124,13 @@ export default {
 			this.pageChange(1)
 		},
 		formSubmission(newItem) {
+			const item = JSON.parse(JSON.stringify(newItem))
 			// eslint-disable-next-line no-console
-			console.log("Register form submitted with data:", newItem)
+			console.log("Register form submitted with data:", item)
 			if (this.formConfig.formCofiguredTo === "add") {
-				const item = JSON.parse(JSON.stringify(newItem))
 				this.addNewItem(item)
 			} else {
-				this.editItem(newItem)
+				this.editItem(item)
 			}
 			this.showForm = false
 		},

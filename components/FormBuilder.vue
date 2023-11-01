@@ -14,11 +14,11 @@
 						:cols="getColSize(field)"
 						:disabled="field.disable || false"
 						validate-on-blur
-						@change="applyDependency(field)"
+						@blur="applyDependency(field)"
 					></v-text-field>
 					<v-text-field
 						v-if="field.type === 'number'"
-						v-model.number="localFormData[field.key]"
+						v-model="localFormData[field.key]"
 						:label="getLabel(field)"
 						:placeholder="field.placeholder"
 						:type="field.type || 'number'"
@@ -26,7 +26,7 @@
 						:cols="getColSize(field)"
 						:disabled="field.disable || false"
 						validate-on-blur
-						@change="applyDependency(field)"
+						@input="applyDependency(field)"
 					></v-text-field>
 					<v-textarea
 						v-if="field.type === 'textArea'"
@@ -231,6 +231,7 @@
 
 <script>
 import _ from "lodash"
+// import { nextTick } from "vue"
 export default {
 	name: "FormBuilder",
 	props: {
@@ -322,9 +323,9 @@ export default {
 		getColSize(field) {
 			return field.col ? field.col : this.col
 		},
-		applyDependency(field) {
+		async applyDependency(field) {
 			if (field.dependency) {
-				field.dependency(this.config, this.localFormData)
+				await field.dependency(this.config, this.localFormData)
 			}
 			// eslint-disable-next-line no-console
 			console.log(this.localFormData)
@@ -367,8 +368,6 @@ export default {
 		submitForm() {
 			if (this.$refs[this.config.ref].validate()) {
 				this.$emit("form-submitted", this.localFormData)
-				// eslint-disable-next-line no-console
-				console.log("form is valid", this.localFormData)
 				this.resetForm()
 			} else {
 				// eslint-disable-next-line no-console

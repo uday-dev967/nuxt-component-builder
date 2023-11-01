@@ -1,6 +1,6 @@
 <template>
 	<div>
-		<h1>Manufacturer List</h1>
+		<h1>Master Pipe List</h1>
 		<table-builder
 			:table-config="tableConfig"
 			:top-bar-config="topBarConfig"
@@ -28,46 +28,18 @@ import DynamicForm from "~/components/FormBuilder.vue"
 import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
+import keyConfigurationHelper from "~/mixins/keyConfugrationHelper.js"
 import SnackBar from "~/components/SnackBar.vue"
 export default {
-	name: "ManufacturerListPage",
+	name: "MechanicalEquipmentParametersPage",
 	components: {
 		"table-builder": TableBuilder,
 		"dynamic-form": DynamicForm,
 		"snack-bar": SnackBar,
 	},
-	mixins: [firstLetterUpperCase, generalcrud, tableFormControls],
+	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, keyConfigurationHelper],
 	data() {
-		return {
-			formConfig: {
-				ref: "exampleTableForm",
-				formCofiguredTo: "add",
-				fields: [
-					{
-						type: "text",
-						label: "Connection Type Name",
-						placeholder: "Connection Type Name",
-						key: "connectionTypeName",
-						rules: ["required"],
-					},
-					{
-						type: "text",
-						label: "Connection Type Code",
-						placeholder: "Connection Type Code",
-						key: "connectionTypeCode",
-						rules: ["required"],
-					},
-				],
-			},
-			tableConfig: {
-				headers: [
-					{ text: "Connection Type Name", value: "connectionTypeName" },
-					{ text: "Connection Type Code", value: "connectionTypeCode" },
-				],
-				tableData: [],
-				totalEntries: 0,
-			},
-		}
+		return {}
 	},
 	computed: {},
 	created() {
@@ -75,10 +47,15 @@ export default {
 	},
 
 	methods: {
-		...mapActions("connectionTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
-		...mapGetters("connectionTypes", ["getConnectionTypes", "getTotalConnectionTypes"]),
+		...mapActions("mechanicalEquipmentParameters", [
+			"fetchTableData",
+			"addTableData",
+			"deleteTableData",
+			"updateTableData",
+		]),
+		...mapGetters("mechanicalEquipmentParameters", ["getMechanicalEquipmentParameters"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			this.initializeData(this.fetchTableData, this.getConnectionTypes, params)
+			this.initializeData(this.fetchTableData, this.getMechanicalEquipmentParameters, params)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},
