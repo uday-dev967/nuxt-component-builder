@@ -28,7 +28,6 @@ import DynamicForm from "~/components/FormBuilder.vue"
 import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
-import keyConfigurationHelper from "~/mixins/keyConfugrationHelper.js"
 import SnackBar from "~/components/SnackBar.vue"
 export default {
 	name: "PipeFittingTypesPage",
@@ -37,9 +36,44 @@ export default {
 		"dynamic-form": DynamicForm,
 		"snack-bar": SnackBar,
 	},
-	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, keyConfigurationHelper],
+	mixins: [firstLetterUpperCase, generalcrud, tableFormControls],
 	data() {
-		return {}
+		return {
+			formConfig: {
+				ref: "exampleTableForm",
+				formCofiguredTo: "add",
+				fields: [
+					{
+						type: "text",
+						label: "Description",
+						placeholder: "Description",
+						key: "description",
+						rules: ["required"],
+					},
+					{
+						type: "number",
+						label: "No of Connections",
+						placeholder: "No of Connections",
+						key: "noOfConnections",
+					},
+					{
+						type: "textArea",
+						label: "Note",
+						placeholder: "Notes...",
+						key: "notes",
+					},
+				],
+			},
+			tableConfig: {
+				headers: [
+					{ text: "Discription", value: "connectionTypeName" },
+					{ text: "Type", value: "connectionTypeCode" },
+					{ text: "Note", value: "notes" },
+				],
+				tableData: [],
+				totalEntries: 0,
+			},
+		}
 	},
 	computed: {},
 	created() {
