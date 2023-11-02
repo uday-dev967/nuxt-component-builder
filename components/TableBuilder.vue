@@ -3,7 +3,7 @@
 		<v-data-table
 			v-model="localInputData.selected"
 			:headers="localHeader"
-			:items="tableConfig.tableData"
+			:items="formattedItems"
 			:page.sync="localInputData.page"
 			item-key="_id"
 			:items-per-page="localInputData.itemsPerPage"
@@ -11,9 +11,6 @@
 			class="elevation-1"
 			show-select
 		>
-			<template #[`header.name`]="{ header }">
-				{{ header.text.toUpperCase() }}
-			</template>
 			<template #top>
 				<v-toolbar flat>
 					<v-row class="mt-2">
@@ -156,6 +153,18 @@ export default {
 	},
 
 	computed: {
+		formattedItems() {
+			return this.tableConfig.tableData.map((item) => {
+				const arrayKey = Object.keys(item).find((key) => Array.isArray(item[key]))
+				if (arrayKey) {
+					return {
+						...item,
+						arrayData: item[arrayKey].join(", "),
+					}
+				}
+				return item
+			})
+		},
 		getPageCount() {
 			return Math.ceil(this.tableConfig.totalEntries / (this.localInputData.itemsPerPage || 10))
 		},
@@ -198,6 +207,8 @@ export default {
 					this.changeItemsPerPage(this.localInputData.itemsPerPage)
 				}
 			} else {
+				// eslint-disable-next-line no-console
+				console.log("button action edit delete", item)
 				action.executeFunction(item)
 			}
 		},

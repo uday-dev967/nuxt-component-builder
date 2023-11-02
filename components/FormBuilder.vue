@@ -328,7 +328,7 @@ export default {
 				await field.dependency(this.config, this.localFormData)
 			}
 			// eslint-disable-next-line no-console
-			console.log(this.localFormData)
+			console.log("applying dependecies", this.localFormData)
 		},
 		initalizeAsyncListKey(field) {
 			const items = field.items || []

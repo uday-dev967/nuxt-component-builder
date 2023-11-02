@@ -12,6 +12,7 @@ import * as dWVPipeFittingParameters from "~/store/modules/dWVPipeFittingParamet
 import * as plumbingFixtureParameters from "~/store/modules/plumbingFixtureParameters.js"
 import * as valveParameters from "~/store/modules/valveParameters.js"
 import * as mechanicalEquipmentParameters from "~/store/modules/mechanicalEquipmentParameters.js"
+import * as genericPipeSystems from "~/store/modules/genericPipeSystems.js"
 
 export default {
 	state() {
@@ -35,5 +36,6 @@ export default {
 		plumbingFixtureParameters,
 		valveParameters,
 		mechanicalEquipmentParameters,
+		genericPipeSystems,
 	},
 }

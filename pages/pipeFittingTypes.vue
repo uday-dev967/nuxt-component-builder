@@ -66,7 +66,7 @@ export default {
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Description", value: "connectionTypeName" },
+					{ text: "Description", value: "description" },
 					{ text: "No of Connections", value: "noOfConnections" },
 					{ text: "Note", value: "notes" },
 				],

@@ -94,7 +94,7 @@ export const actions = {
 
 export const getters = {
 	getCountries(state) {
-		return state.countriesData.countries
+		return state.countriesData.countriesData
 	},
 	getTotalCountries(state) {
 		return state.totalCountries

@@ -3,13 +3,20 @@ export default {
 		setSnackBar(message, color) {
 			this.$refs.snackbar.showSnackbar(message, color)
 		},
-		async initializeData(fetchAction, dataGetter, params = { page: 0, docsPerPage: 10 }) {
+		async initializeData(fetchAction, dataGetter, params = { page: 0, docsPerPage: 10 }, helpers) {
 			const response = await fetchAction(params)
 			if (response.success) {
-				this.tableConfig.tableData = dataGetter()
-				// eslint-disable-next-line no-console
-				console.log("initialized", this.tableConfig.tableData)
-				this.tableConfig.totalEntries = response.totalEntries
+				if (helpers?.configureTableData) {
+					const data = dataGetter()
+					// eslint-disable-next-line no-console
+					console.log("data from getter", data)
+					this.tableConfig.tableData = helpers.configureTableData(data)
+				} else {
+					this.tableConfig.tableData = dataGetter()
+					// eslint-disable-next-line no-console
+					console.log("initialized", this.tableConfig.tableData)
+					this.tableConfig.totalEntries = response.totalEntries
+				}
 			} else {
 				this.setSnackBar(response.message, "error")
 			}
@@ -58,6 +65,7 @@ export default {
 				this.setSnackBar(response.message, "error")
 			}
 		},
+
 		addNewItem(item) {
 			this.addItem(item, this.addTableData)
 		},

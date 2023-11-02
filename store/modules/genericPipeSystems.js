@@ -1,8 +1,8 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
-import ApiService from "~/services/masterPipeServices.js"
+import ApiService from "~/services/genericPipeSystemsServices.js"
 
-const baseName = "MasterPipes"
-const _baseName = "masterPipes"
+const baseName = "GenericPipeSystems"
+const _baseName = "genericPipeSystems"
 const mutationTypes = {
 	setData: `set${baseName}Data`,
 	setTotal: `setTotal${baseName}`,
@@ -43,9 +43,6 @@ export const actions = {
 	},
 	deleteTableData({ commit }, data) {
 		return deleteItems(ApiService[`delete${baseName}`], data)
-	},
-	fetchSizes({ commit }, params) {
-		return fetchData(commit, ApiService[`get${baseName}`], params, mutationTypes)
 	},
 }
 

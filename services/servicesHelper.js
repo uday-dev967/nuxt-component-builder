@@ -1,10 +1,14 @@
+import qs from "query-string"
 import apiClient from "~/services/apiClient.js"
 
 export default {
 	getData(path, params) {
 		// eslint-disable-next-line no-console
 		console.log("service helper getData", path, params)
-		return apiClient.get(`${path}?pageNo=${params.page}&docsPerPage=${params.docsPerPage}`)
+		const updatedParams = { ...params, pageNo: params.page, page: undefined }
+		const queryString = qs.stringify(updatedParams, { arrayFormat: "bracket" })
+		// return apiClient.get(`${path}?pageNo=${params.page}&docsPerPage=${params.docsPerPage}`)
+		return apiClient.get(`${path}?${queryString}`)
 	},
 	getAllData(path) {
 		// eslint-disable-next-line no-console
