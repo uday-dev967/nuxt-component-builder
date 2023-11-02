@@ -50,6 +50,6 @@ export const getters = {
 	[`get${baseName}`](state) {
 		// eslint-disable-next-line no-console
 		console.log("from getter", state[`${_baseName}Data`])
-		return state[`${_baseName}Data`][`${"connections"}Data`]
+		return state[`${_baseName}Data`][`${_baseName}Data`]
 	},
 }

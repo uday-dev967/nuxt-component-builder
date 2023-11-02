@@ -100,9 +100,9 @@ export const getters = {
 		return state.totalCountries
 	},
 	getCountryCodes(state) {
-		return state.countriesData.countries.map((country) => country.countryRegionCode)
+		return state.countriesData.countriesData.map((country) => country.countryRegionCode)
 	},
 	getCountryNames(state) {
-		return state.countriesData.countries.map((country) => country.countryRegionName)
+		return state.countriesData.countriesData.map((country) => country.countryRegionName)
 	},
 }
