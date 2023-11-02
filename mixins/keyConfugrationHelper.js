@@ -26,9 +26,10 @@ export default {
 						rules: ["required"],
 					},
 					{
-						type: "switch",
-						label: "Manidatory",
-						key: "maidatory",
+						type: "combobox",
+						label: "Mandatory",
+						key: "mandatory",
+						items: ["yes", "no"],
 					},
 					{
 						type: "textArea",
@@ -40,8 +41,9 @@ export default {
 			},
 			tableConfig: {
 				headers: [
-					{ text: "Description", value: "connectionTypeName" },
-					{ text: "Type", value: "connectionTypeCode" },
+					{ text: "Description", value: "description" },
+					{ text: "Type", value: "type" },
+					{ text: "Mandatory", value: "mandatory" },
 					{ text: "Note", value: "notes" },
 				],
 				tableData: [],

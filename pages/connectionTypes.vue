@@ -55,7 +55,10 @@ export default {
 						label: "Connection Type Code",
 						placeholder: "Connection Type Code",
 						key: "connectionTypeCode",
-						rules: ["required"],
+						rules: [
+							"required",
+							(v) => (v && v.length <= 8) || "Connection Type Code must be a maximum of 8 characters.",
+						],
 					},
 				],
 			},

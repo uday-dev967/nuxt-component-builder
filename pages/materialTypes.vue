@@ -55,7 +55,10 @@ export default {
 						label: "Material Type Code",
 						placeholder: "Material Type Code",
 						key: "materialTypeCode",
-						rules: ["required"],
+						rules: [
+							"required",
+							(v) => (v && v.length <= 3) || "Material Type Code must be a maximum of 3 characters.",
+						],
 					},
 				],
 			},

@@ -55,7 +55,10 @@ export default {
 						label: "Country Code",
 						placeholder: "Country Code",
 						key: "countryRegionCode",
-						rules: ["required"],
+						rules: [
+							"required",
+							(v) => (v && v.length <= 8) || "Country Code must be a maximum of 8 characters.",
+						],
 					},
 					{
 						type: "textArea",
