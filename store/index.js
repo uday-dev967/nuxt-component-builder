@@ -13,6 +13,7 @@ import * as plumbingFixtureParameters from "~/store/modules/plumbingFixtureParam
 import * as valveParameters from "~/store/modules/valveParameters.js"
 import * as mechanicalEquipmentParameters from "~/store/modules/mechanicalEquipmentParameters.js"
 import * as genericPipeSystems from "~/store/modules/genericPipeSystems.js"
+import * as manufacturer from "~/store/modules/manufacturer.js"
 
 export default {
 	state() {
@@ -37,5 +38,6 @@ export default {
 		valveParameters,
 		mechanicalEquipmentParameters,
 		genericPipeSystems,
+		manufacturer,
 	},
 }

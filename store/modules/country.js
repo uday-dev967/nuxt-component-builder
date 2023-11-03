@@ -30,8 +30,8 @@ export const actions = {
 		return fetchData(commit, ApiService[`get${baseName}`], params, mutationTypes)
 	},
 
-	fetchAllRecords({ commit }) {
-		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes)
+	fetchAllRecordsCountries({ commit }, helper) {
+		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes, helper)
 
 		// try {
 		// 	const response = await ApiService.getAllCountries()

@@ -23,7 +23,11 @@ export default {
 			}
 		},
 		async addItem(item, addItemAction) {
-			const response = await addItemAction(item)
+			let updatedItem = JSON.parse(JSON.stringify(item))
+			if (this.crudFormHelper) {
+				updatedItem = this.crudFormHelper(updatedItem)
+			}
+			const response = await addItemAction(updatedItem)
 			if (response.success) {
 				this.initializeTableData({
 					page: this.page - 1,
@@ -35,8 +39,11 @@ export default {
 			}
 		},
 		async editRecord(item, updateAction) {
-			const editedItem = JSON.parse(JSON.stringify(item))
-			const response = await updateAction(editedItem)
+			let updatedItem = JSON.parse(JSON.stringify(item))
+			if (this.crudFormHelper) {
+				updatedItem = this.crudFormHelper(updatedItem)
+			}
+			const response = await updateAction(updatedItem)
 			if (response.success) {
 				this.initializeTableData({
 					page: this.page - 1,

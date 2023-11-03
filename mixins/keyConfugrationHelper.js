@@ -20,7 +20,7 @@ export default {
 						rules: ["required"],
 					},
 					{
-						type: "combobox",
+						type: "autocomplete",
 						label: "Mandatory",
 						key: "mandatoryField",
 						items: ["yes", "no"],

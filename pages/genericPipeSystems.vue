@@ -52,7 +52,7 @@ export default {
 						rules: ["required"],
 					},
 					{
-						type: "Code",
+						type: "text",
 						label: "Code",
 						placeholder: "Code",
 						key: "code",
@@ -68,10 +68,10 @@ export default {
 						items: ["inches", "mm"],
 						key: "unitType",
 						rules: ["required"],
-						refField: "sizesObj",
+						refField: "sizes",
 						disable: false,
 						getDataOfRefField: (type) => this.populateSizes(type),
-						dependency: function (configObj, formdata) {
+						dependency: async function (configObj, formdata) {
 							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
 							// eslint-disable-next-line no-console
 							console.log(this.key, formdata[this.key], formdata)
@@ -79,7 +79,7 @@ export default {
 								// eslint-disable-next-line no-console
 								console.log("unit type", "not null")
 								dependentObj.disable = false
-								dependentObj.items = this.getDataOfRefField(formdata[this.key])
+								dependentObj.items = await this.getDataOfRefField(formdata[this.key])
 							} else {
 								dependentObj.disable = true
 							}
@@ -91,13 +91,8 @@ export default {
 						type: "combobox",
 						label: "Pipe sizes available",
 						placeholder: "Pipe sizes available",
-						items: [
-							{ id: "653e83b0732928a997b50e08", value: "1/2" },
-							{ id: 2, value: "1/3" },
-							{ id: "653e8401732928a997b50e0b", value: "3/4" },
-						],
-						key: "sizesObj",
-
+						items: [],
+						key: "sizes",
 						rules: ["required"],
 						refField: "unitType",
 						disable: false,
@@ -123,7 +118,8 @@ export default {
 				headers: [
 					{ text: "GPS Name", value: "name" },
 					{ text: "Code", value: "code" },
-					{ text: "Sizes", value: "sizes", type: "array" },
+					{ text: "Unit Type", value: "unitType" },
+					{ text: "Sizes", value: "sizesText", type: "array" },
 				],
 				tableData: [],
 				totalEntries: 0,
@@ -149,29 +145,38 @@ export default {
 		configureTableData(data) {
 			const newData = data.map((eachData) => {
 				if (eachData.unitType === "inches") {
-					const sizes = eachData.sizes.map((size) => size.imperialText).join(",")
-					const sizesObj = eachData.sizes.map((size) => ({ id: size._id, value: size.imperialText }))
-					return { ...eachData, sizes, sizesObj }
+					const sizesText = eachData.sizes.map((size) => size.imperialText).join(",")
+					const sizes = eachData.sizes.map((size) => ({ id: size._id, value: size.imperialText }))
+					return { ...eachData, sizesText, sizes }
 				} else {
-					const sizes = eachData.sizes.map((size) => size.metricText).join(",")
-					const sizesObj = eachData.sizes.map((size) => ({ id: size._id, value: size.metricText }))
+					const sizesText = eachData.sizes.map((size) => size.metricText).join(",")
+					const sizes = eachData.sizes.map((size) => ({ id: size._id, value: size.metricText }))
 
-					return { ...eachData, sizes, sizesObj }
+					return { ...eachData, sizesText, sizes }
 				}
 			})
 			return newData
 		},
 
-		populateSizes(type) {
-			const helper = { params: { unit: type } }
-			const data = this.fetchData(this.fetchAllRecordsMasterPipes, this.getPipeSizes, helper)
+		async populateSizes(type) {
+			const helper = { params: { unit: type || "mm" } }
+			const sizesData = await this.fetchData(this.fetchAllRecordsMasterPipes, this.getPipeSizes, helper)
+			const updatedData = sizesData.map((data) => ({
+				id: data._id,
+				value: `${type === "mm" ? data.metricText : data.imperialText}`,
+			}))
 			// eslint-disable-next-line no-console
-			console.log("populating sizes", data)
+			console.log("populating sizes", updatedData)
+			return updatedData
 		},
-		configuerFormData(data) {
-			data.sizes = data.sizesObj
-			return data
+		crudFormHelper(item) {
+			item.sizes = item.sizes.map((size) => size.id)
+			return item
 		},
+		// configuerFormData(data) {
+		// 	data.sizes = data.sizesObj
+		// 	return data
+		// },
 	},
 }
 </script>

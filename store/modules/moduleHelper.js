@@ -11,6 +11,8 @@ const resolveError = function (error) {
 
 export async function fetchData(commit, service, payload, mutationTypes) {
 	try {
+		// eslint-disable-next-line no-console
+		console.log("from module helper", service, payload, mutationTypes)
 		const response = await service(payload)
 		commit(mutationTypes.setData, response.data)
 		// eslint-disable-next-line no-console

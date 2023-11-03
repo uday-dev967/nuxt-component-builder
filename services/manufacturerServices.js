@@ -1,6 +1,6 @@
 import servicesHelper from "~/services/servicesHelper"
-const basePath = "/masterPipes"
-const baseName = "MasterPipes"
+const basePath = "/manufacturers"
+const baseName = "Manufacturers"
 export default {
 	[`get${baseName}`](params = { page: 0, docsPerPage: 10 }) {
 		// eslint-disable-next-line no-console
