@@ -10,10 +10,14 @@ export default {
 		// return apiClient.get(`${path}?pageNo=${params.page}&docsPerPage=${params.docsPerPage}`)
 		return apiClient.get(`${path}?${queryString}`)
 	},
-	getAllData(path) {
+	getAllData(path, helper) {
+		let queryString
+		if (helper.params) {
+			queryString = qs.stringify(helper.params, { arrayFormat: "bracket" })
+		}
 		// eslint-disable-next-line no-console
 		console.log("service helper getAllData", path)
-		return apiClient.get(path)
+		return apiClient.get(`${path}?${queryString}`)
 	},
 	postData(path, data) {
 		// eslint-disable-next-line no-console

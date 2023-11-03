@@ -150,8 +150,11 @@ export default {
 			this.formConfig = { ...this.formConfig, ...this.editFormConfig }
 			// this.editIndex = this.tableConfig.tableData.findIndex((eachItem) => eachItem.id === item.id)
 			// eslint-disable-next-line no-console
-			// console.log("my item", item)
+			console.log("my item", item)
 			this.formData = JSON.parse(JSON.stringify(item))
+			if (this.configuerFormData) {
+				this.formData = this.configuerFormData(this.formData)
+			}
 			this.showForm = true
 			this.formKey++
 		},

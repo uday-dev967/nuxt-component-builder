@@ -68,9 +68,9 @@ export default {
 						items: ["inches", "mm"],
 						key: "unitType",
 						rules: ["required"],
-						refField: "sizes",
+						refField: "sizesObj",
 						disable: false,
-						getDataOfRefField: this.populateSizes,
+						getDataOfRefField: (type) => this.populateSizes(type),
 						dependency: function (configObj, formdata) {
 							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
 							// eslint-disable-next-line no-console
@@ -96,19 +96,13 @@ export default {
 							{ id: 2, value: "1/3" },
 							{ id: "653e8401732928a997b50e0b", value: "3/4" },
 						],
-						key: "sizes",
+						key: "sizesObj",
+
 						rules: ["required"],
 						refField: "unitType",
 						disable: false,
 						multiple: true,
 						dependency: function (configObj, formdata) {
-							formdata[this.key] = formdata?.sizesObj
-							// eslint-disable-next-line no-console
-							console.log("type of the form key value", formdata[this.key])
-							if (typeof formdata[this.key] === "string") {
-								// eslint-disable-next-line no-console
-								console.log("type of the form key value", formdata[this.key])
-							}
 							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
 							// eslint-disable-next-line no-console
 							console.log(this.key, formdata[this.key], formdata)
@@ -144,11 +138,11 @@ export default {
 	methods: {
 		...mapActions("genericPipeSystems", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("genericPipeSystems", ["getGenericPipeSystems"]),
-		...mapActions("masterPipe", ["fetchSizes"]),
-		...mapGetters("masterPipe", ["getSizes"]),
+		...mapActions("masterPipe", ["fetchAllRecordsMasterPipes"]),
+		...mapGetters("masterPipe", ["getPipeSizes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
-			// const helpers = { configureTableData: this.configureTableData }
-			this.initializeData(this.fetchTableData, this.getGenericPipeSystems, params)
+			const helpers = { configureTableData: this.configureTableData }
+			this.initializeData(this.fetchTableData, this.getGenericPipeSystems, params, helpers)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},
@@ -167,10 +161,16 @@ export default {
 			})
 			return newData
 		},
+
 		populateSizes(type) {
-			const payload = { unitType: type }
-			const helper = { payload }
-			return this.fethcData(this.fetchSizes, this.getSizes, helper)
+			const helper = { params: { unit: type } }
+			const data = this.fetchData(this.fetchAllRecordsMasterPipes, this.getPipeSizes, helper)
+			// eslint-disable-next-line no-console
+			console.log("populating sizes", data)
+		},
+		configuerFormData(data) {
+			data.sizes = data.sizesObj
+			return data
 		},
 	},
 }

@@ -1,8 +1,8 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
 import ApiService from "~/services/specialPipeFittingParametersServices.js"
 
-const baseName = "SpecialPipeFittingTypes"
-const _baseName = "specialPipeFittingTypes"
+const baseName = "SpecialPipeFittingParameters"
+const _baseName = "specialPipeFittingParameters"
 const mutationTypes = {
 	setData: `set${baseName}Data`,
 	setTotal: `setTotal${baseName}`,

@@ -21,9 +21,9 @@ export async function fetchData(commit, service, payload, mutationTypes) {
 	}
 }
 
-export async function fetchAllData(commit, service, mutationTypes) {
+export async function fetchAllData(commit, service, mutationTypes, helper) {
 	try {
-		const response = await service()
+		const response = await service(helper)
 		commit(mutationTypes.setData, response.data)
 		commit(mutationTypes.setTotal, response.data.total)
 		// eslint-disable-next-line no-console

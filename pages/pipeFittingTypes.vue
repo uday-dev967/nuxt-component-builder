@@ -55,6 +55,10 @@ export default {
 						label: "No of Connections",
 						placeholder: "No of Connections",
 						key: "noOfConnections",
+						rules: [
+							"required",
+							(v) => v === null || v === "" || (v >= 0 && v <= 3) || "Please enter a number from 0 to 3",
+						],
 					},
 					{
 						type: "textArea",

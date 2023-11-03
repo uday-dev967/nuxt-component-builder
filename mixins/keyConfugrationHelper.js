@@ -15,20 +15,14 @@ export default {
 					{
 						type: "autocomplete",
 						label: "Type",
-						items: [
-							{ id: "text", value: "Text" },
-							{ id: "date", value: "Date" },
-							{ id: "boolean", value: "Boolean" },
-							{ id: "image", value: "Image" },
-							{ id: "number", value: "Number" },
-						],
+						items: ["Text", "Date", "Boolean", "Image", "Number"],
 						key: "type",
 						rules: ["required"],
 					},
 					{
 						type: "combobox",
 						label: "Mandatory",
-						key: "mandatory",
+						key: "mandatoryField",
 						items: ["yes", "no"],
 					},
 					{
@@ -43,7 +37,7 @@ export default {
 				headers: [
 					{ text: "Description", value: "description" },
 					{ text: "Type", value: "type" },
-					{ text: "Mandatory", value: "mandatory" },
+					{ text: "Mandatory", value: "mandatoryField" },
 					{ text: "Note", value: "notes" },
 				],
 				tableData: [],

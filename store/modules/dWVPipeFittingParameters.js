@@ -1,8 +1,8 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
 import ApiService from "~/services/dWVPipeParametersServices.js"
 
-const baseName = "DWVPipeFittingTypes"
-const _baseName = "dWVPipeFittingTypes"
+const baseName = "DWVPipeFittingParameters"
+const _baseName = "dWVPipeFittingParameters"
 const mutationTypes = {
 	setData: `set${baseName}Data`,
 	setTotal: `setTotal${baseName}`,

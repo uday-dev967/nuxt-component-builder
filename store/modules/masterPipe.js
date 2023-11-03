@@ -31,8 +31,8 @@ export const actions = {
 	fetchTableData({ commit }, params) {
 		return fetchData(commit, ApiService[`get${baseName}`], params, mutationTypes)
 	},
-	fetchAllRecords({ commit }) {
-		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes)
+	[`fetchAllRecords${baseName}`]({ commit }, helper) {
+		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes, helper)
 	},
 
 	addTableData({ commit }, data) {
@@ -53,6 +53,9 @@ export const getters = {
 	[`get${baseName}`](state) {
 		// eslint-disable-next-line no-console
 		console.log("from getter", state[`${_baseName}Data`])
+		return state[`${_baseName}Data`][`${_baseName}Data`]
+	},
+	getPipeSizes(state) {
 		return state[`${_baseName}Data`][`${_baseName}Data`]
 	},
 }

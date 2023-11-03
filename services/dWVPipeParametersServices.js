@@ -1,6 +1,6 @@
 import servicesHelper from "~/services/servicesHelper"
-const basePath = "/dWVPipeParameters"
-const baseName = "DWVPipeParameters"
+const basePath = "/dWVPipeFittingParameters"
+const baseName = "DWVPipeFittingParameters"
 export default {
 	[`get${baseName}`](params = { page: 0, docsPerPage: 10 }) {
 		// eslint-disable-next-line no-console

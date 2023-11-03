@@ -3,7 +3,7 @@
 		<v-data-table
 			v-model="localInputData.selected"
 			:headers="localHeader"
-			:items="formattedItems"
+			:items="tableConfig.tableData"
 			:page.sync="localInputData.page"
 			item-key="_id"
 			:items-per-page="localInputData.itemsPerPage"
@@ -153,18 +153,6 @@ export default {
 	},
 
 	computed: {
-		formattedItems() {
-			return this.tableConfig.tableData.map((item) => {
-				const arrayKey = Object.keys(item).find((key) => Array.isArray(item[key]))
-				if (arrayKey) {
-					return {
-						...item,
-						arrayData: item[arrayKey].join(", "),
-					}
-				}
-				return item
-			})
-		},
 		getPageCount() {
 			return Math.ceil(this.tableConfig.totalEntries / (this.localInputData.itemsPerPage || 10))
 		},

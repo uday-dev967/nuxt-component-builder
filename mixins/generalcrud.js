@@ -11,6 +11,7 @@ export default {
 					// eslint-disable-next-line no-console
 					console.log("data from getter", data)
 					this.tableConfig.tableData = helpers.configureTableData(data)
+					this.tableConfig.totalEntries = response.totalEntries
 				} else {
 					this.tableConfig.tableData = dataGetter()
 					// eslint-disable-next-line no-console
