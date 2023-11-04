@@ -169,12 +169,17 @@ export default {
 			console.log("populating sizes", updatedData)
 			return updatedData
 		},
-		// crudFormHelper(item) {
-		// 	// eslint-disable-next-line no-console
-		// 	console.log("from curd form helper", item)
-		// 	item.sizes = item.sizes.map((size) => size.id)
-		// 	return item
-		// },
+		crudFormHelper(item) {
+			// eslint-disable-next-line no-console
+			console.log("from curd form helper", item)
+			item.sizes = item.sizes.map((size) => {
+				if (typeof size === "object") {
+					return size.id
+				}
+				return size
+			})
+			return item
+		},
 		// configuerFormData(data) {
 		// 	data.sizes = data.sizesObj
 		// 	return data

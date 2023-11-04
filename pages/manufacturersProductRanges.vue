@@ -120,10 +120,8 @@ export default {
 		},
 		configureTableData(data) {
 			// eslint-disable-next-line no-console
-			console.log("configure", data)
+			console.log("configureing", data)
 			const updatedData = data.map((manufaturer) => {
-				// eslint-disable-next-line no-console
-				console.log("configuring", manufaturer)
 				const countryCode = manufaturer.country.countryRegionCode
 				const country = { id: manufaturer.country._id, value: manufaturer.country.countryRegionCode }
 				return { ...manufaturer, countryCode, country }
