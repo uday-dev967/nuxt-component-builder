@@ -62,7 +62,7 @@ export default {
 						],
 					},
 					{
-						type: "combobox",
+						type: "autocomplete",
 						label: "Unit Type",
 						placeholder: "Unit Type",
 						items: ["inches", "mm"],
@@ -88,7 +88,7 @@ export default {
 						},
 					},
 					{
-						type: "combobox",
+						type: "autocomplete",
 						label: "Pipe sizes available",
 						placeholder: "Pipe sizes available",
 						items: [],
@@ -119,7 +119,7 @@ export default {
 					{ text: "GPS Name", value: "name" },
 					{ text: "Code", value: "code" },
 					{ text: "Unit Type", value: "unitType" },
-					{ text: "Sizes", value: "sizesText", type: "array" },
+					{ text: "Sizes", value: "sizesText" },
 				],
 				tableData: [],
 				totalEntries: 0,
@@ -169,10 +169,12 @@ export default {
 			console.log("populating sizes", updatedData)
 			return updatedData
 		},
-		crudFormHelper(item) {
-			item.sizes = item.sizes.map((size) => size.id)
-			return item
-		},
+		// crudFormHelper(item) {
+		// 	// eslint-disable-next-line no-console
+		// 	console.log("from curd form helper", item)
+		// 	item.sizes = item.sizes.map((size) => size.id)
+		// 	return item
+		// },
 		// configuerFormData(data) {
 		// 	data.sizes = data.sizesObj
 		// 	return data

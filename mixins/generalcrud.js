@@ -23,9 +23,11 @@ export default {
 			}
 		},
 		async addItem(item, addItemAction) {
+			// eslint-disable-next-line no-console
+			console.log("from grenral curd add new", item)
 			let updatedItem = JSON.parse(JSON.stringify(item))
 			if (this.crudFormHelper) {
-				updatedItem = this.crudFormHelper(updatedItem)
+				updatedItem = await this.crudFormHelper(updatedItem)
 			}
 			const response = await addItemAction(updatedItem)
 			if (response.success) {
@@ -41,7 +43,9 @@ export default {
 		async editRecord(item, updateAction) {
 			let updatedItem = JSON.parse(JSON.stringify(item))
 			if (this.crudFormHelper) {
-				updatedItem = this.crudFormHelper(updatedItem)
+				updatedItem = await this.crudFormHelper(updatedItem)
+				// eslint-disable-next-line no-console
+				console.log("curd form helper edit", updatedItem)
 			}
 			const response = await updateAction(updatedItem)
 			if (response.success) {
@@ -51,7 +55,7 @@ export default {
 				})
 				this.setSnackBar(response.message, "success")
 			} else {
-				this.setSnackBar(response.message, "success")
+				this.setSnackBar(response.message, "error")
 			}
 		},
 		async deleteItems(records, deleteAction) {

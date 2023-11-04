@@ -137,6 +137,7 @@
 									:label="field.PickerLabel ? field.PickerLabel : `${field.key}Multipicker`"
 									prepend-icon="mdi-calendar"
 									readonly
+									validate-on-blur
 									v-bind="attrs"
 									v-on="on"
 								></v-combobox>
@@ -168,6 +169,7 @@
 						:disabled="field.disable || false"
 						item-text="value"
 						item-value="id"
+						validate-on-blur
 						@change="applyDependency(field)"
 					>
 					</v-combobox>
@@ -181,8 +183,23 @@
 						:disabled="field.disable || false"
 						item-text="value"
 						item-value="id"
+						validate-on-blur
 						@change="applyDependency(field)"
-					></v-autocomplete>
+					>
+						<template v-if="field.configurationNeeded" #item="dataObj">
+							<v-list-item-avatar v-if="dataObj.item.avatar">
+								<img :src="dataObj.item.avatar" />
+							</v-list-item-avatar>
+							<v-list-item-content>
+								<v-list-item-title v-if="dataObj.item.title">
+									{{ dataObj.item.title }}
+								</v-list-item-title>
+								<v-list-item-subtitle v-if="dataObj.item.subTitle">
+									{{ dataObj.item.subTitle }}
+								</v-list-item-subtitle>
+							</v-list-item-content>
+						</template>
+					</v-autocomplete>
 					<v-autocomplete
 						v-else-if="field.type === 'asyncAutocomplete'"
 						v-model="localFormData[field.key]"
@@ -198,9 +215,24 @@
 						item-text="Description"
 						item-value="API"
 						return-object
+						validate-on-blur
 						@change="applyDependency(field)"
 						@update:search-input="search($event, field)"
-					></v-autocomplete>
+					>
+						<template v-if="field.configurationNeeded" #item="dataObj">
+							<v-list-item-avatar v-if="dataObj.item.avatar">
+								<img :src="dataObj.item.avatar" />
+							</v-list-item-avatar>
+							<v-list-item-content>
+								<v-list-item-title v-if="dataObj.item.title">
+									{{ dataObj.item.title }}
+								</v-list-item-title>
+								<v-list-item-subtitle v-if="dataObj.item.subTitle">
+									{{ dataObj.item.subTitle }}
+								</v-list-item-subtitle>
+							</v-list-item-content>
+						</template>
+					</v-autocomplete>
 					<v-switch
 						v-else-if="field.type === 'switch'"
 						v-model="localFormData[field.key]"
@@ -414,13 +446,32 @@ export default {
 		},
 		getAutoCompleteRules(field) {
 			const rules = this.addCustomRequredRules(field)
-			field.rules?.includes("required") && rules.push(this.requiredRule)
+			field.rules?.includes("required") &&
+				rules.push((value) => {
+					if (value === null || value === undefined) {
+						return "Please select an option"
+					} else if (Array.isArray(value)) {
+						return value.length !== 0 || "Please select an option"
+					} else {
+						return Object.keys(value).length !== 0 || "Please select an option"
+					}
+				})
+
 			// Add any other date-specific validation rules if needed
 			return rules
 		},
 		getComboboxRules(field) {
 			const rules = this.addCustomRequredRules(field)
-			field.rules?.includes("required") && rules.push(this.requiredRule)
+			field.rules?.includes("required") &&
+				rules.push((value) => {
+					if (value === null || value === undefined) {
+						return "Please select an option"
+					} else if (Array.isArray(value)) {
+						return value.length !== 0 || "Please select an option"
+					} else {
+						return Object.keys(value).length !== 0 || "Please select an option"
+					}
+				})
 			// Add any other date-specific validation rules if needed
 			return rules
 		},
