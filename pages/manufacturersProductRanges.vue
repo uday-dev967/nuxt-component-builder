@@ -29,9 +29,10 @@ import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
 import SnackBar from "~/components/SnackBar.vue"
-import dataFetchHelpers from "~/mixins/dataFetchHelpers"
-import pipeSizesHelper from "~/mixins/pipeSizesHelper"
-import countryHelper from "~/mixins/countryHelper"
+import dataFetchHelpers from "~/mixins/dataFetchHelpers.js"
+import pipeSizesHelper from "~/mixins/pipeSizesHelper.js"
+import countryHelper from "~/mixins/countryHelper.js"
+import manufacturerHelper from "~/mixins/manufaturerHelper.js"
 export default {
 	name: "ManufacturersProductRangesPage",
 	components: {
@@ -39,7 +40,15 @@ export default {
 		"dynamic-form": DynamicForm,
 		"snack-bar": SnackBar,
 	},
-	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, dataFetchHelpers, pipeSizesHelper, countryHelper],
+	mixins: [
+		firstLetterUpperCase,
+		generalcrud,
+		tableFormControls,
+		dataFetchHelpers,
+		pipeSizesHelper,
+		countryHelper,
+		manufacturerHelper,
+	],
 	data() {
 		return {
 			formConfig: null,
@@ -178,24 +187,6 @@ export default {
 			this.initializeData(this.fetchTableData, this.getManufacturerProductRanges, params, helper)
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
-		},
-		async getAllManufaturersForAutoComplete() {
-			const helper = { dropdown: "yes" }
-			const data = await this.fetchData(this.fetchAllRecordsManufacturers, this.getManufacturers, helper)
-			const updatedData = data.map((manufacturer) => {
-				// eslint-disable-next-line no-console
-				console.log("manufacturer", manufacturer)
-				return {
-					id: manufacturer._id,
-					title: manufacturer.manufacturerName,
-					value: manufacturer.manufacturerName,
-					subTitle: manufacturer.country.countryRegionName,
-					unitType: manufacturer.unitType,
-				}
-			})
-			// eslint-disable-next-line no-console
-			console.log("updated drop down data", updatedData)
-			return updatedData
 		},
 
 		crudFormHelper(item) {
