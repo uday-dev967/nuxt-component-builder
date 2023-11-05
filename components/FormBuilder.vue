@@ -324,11 +324,18 @@ export default {
 	},
 	created() {
 		this.config = _.cloneDeep(this.formConfig)
+		this.config.fields.forEach(async (field) => {
+			if (field.type === "autocomplete") {
+				if (field.getItems) {
+					field.items = await field.getItems()
+				}
+			}
+		})
 	},
 	mounted() {
 		// eslint-disable-next-line no-console
 		console.log(this.data)
-		this.config.fields.forEach((field) => {
+		this.config.fields.forEach(async (field) => {
 			if (field.type === "asyncAuotcomplete") {
 				this.asyncList[field.key] = field.items || []
 				this.initalizeAsyncListKey(field)
@@ -336,6 +343,9 @@ export default {
 			}
 			if (field.dependency) {
 				this.applyDependency(field)
+			}
+			if (field.getItems) {
+				field.items = await field.getItems()
 			}
 		})
 	},

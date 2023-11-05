@@ -105,4 +105,7 @@ export const getters = {
 	getCountryNames(state) {
 		return state.countriesData.countriesData.map((country) => country.countryRegionName)
 	},
+	getCountryById: (state) => (id) => {
+		return state.countiresData.countiresData.find((country) => country.id === id)
+	},
 }

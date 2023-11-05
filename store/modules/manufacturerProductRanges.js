@@ -1,8 +1,8 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
-import ApiService from "~/services/manufacturersProductRangesServices.js"
+import ApiService from "~/services/manufacturerProductRangesServices.js"
 
-const baseName = "ManufacturersProductRanges"
-const _baseName = "manufacturersProductRanges"
+const baseName = "ManufacturerProductRanges"
+const _baseName = "manufacturerProductRanges"
 const mutationTypes = {
 	setData: `set${baseName}Data`,
 	setTotal: `setTotal${baseName}`,
@@ -53,9 +53,6 @@ export const getters = {
 	[`get${baseName}`](state) {
 		// eslint-disable-next-line no-console
 		console.log("from getter", state[`${_baseName}Data`])
-		return state[`${_baseName}Data`][`${_baseName}Data`]
-	},
-	getPipeSizes(state) {
 		return state[`${_baseName}Data`][`${_baseName}Data`]
 	},
 }

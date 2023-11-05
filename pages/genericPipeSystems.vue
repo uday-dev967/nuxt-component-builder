@@ -30,6 +30,7 @@ import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
 import SnackBar from "~/components/SnackBar.vue"
 import dataFetchHelpers from "~/mixins/dataFetchHelpers.js"
+import pipeSizesHelper from "~/mixins/pipeSizesHelper"
 export default {
 	name: "GenericPipeSystemsPage",
 	components: {
@@ -37,83 +38,10 @@ export default {
 		"dynamic-form": DynamicForm,
 		"snack-bar": SnackBar,
 	},
-	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, dataFetchHelpers],
+	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, dataFetchHelpers, pipeSizesHelper],
 	data() {
 		return {
-			formConfig: {
-				ref: "exampleTableForm",
-				formCofiguredTo: "add",
-				fields: [
-					{
-						type: "text",
-						label: "GPS Name",
-						placeholder: "GPS Name",
-						key: "name",
-						rules: ["required"],
-					},
-					{
-						type: "text",
-						label: "Code",
-						placeholder: "Code",
-						key: "code",
-						rules: [
-							"required",
-							(v) => (v && v.length <= 8) || "Connection Type Code must be a maximum of 8 characters.",
-						],
-					},
-					{
-						type: "autocomplete",
-						label: "Unit Type",
-						placeholder: "Unit Type",
-						items: ["inches", "mm"],
-						key: "unitType",
-						rules: ["required"],
-						refField: "sizes",
-						disable: false,
-						getDataOfRefField: (type) => this.populateSizes(type),
-						dependency: async function (configObj, formdata) {
-							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
-							// eslint-disable-next-line no-console
-							console.log(this.key, formdata[this.key], formdata)
-							if (formdata[this.key]) {
-								// eslint-disable-next-line no-console
-								console.log("unit type", "not null")
-								dependentObj.disable = false
-								dependentObj.items = await this.getDataOfRefField(formdata[this.key])
-							} else {
-								dependentObj.disable = true
-							}
-							// eslint-disable-next-line no-console
-							console.log("unit type", dependentObj)
-						},
-					},
-					{
-						type: "autocomplete",
-						label: "Pipe sizes available",
-						placeholder: "Pipe sizes available",
-						items: [],
-						key: "sizes",
-						rules: ["required"],
-						refField: "unitType",
-						disable: false,
-						multiple: true,
-						dependency: function (configObj, formdata) {
-							const dependentObj = configObj.fields.find((field) => field.refField === this.key)
-							// eslint-disable-next-line no-console
-							console.log(this.key, formdata[this.key], formdata)
-							if (formdata[this.key] && formdata[this.key].length > 0) {
-								// eslint-disable-next-line no-console
-								console.log("unit type", "not null")
-								dependentObj.disable = true
-							} else {
-								dependentObj.disable = false
-							}
-							// eslint-disable-next-line no-console
-							console.log("unit type", dependentObj)
-						},
-					},
-				],
-			},
+			formConfig: null,
 			tableConfig: {
 				headers: [
 					{ text: "GPS Name", value: "name" },
@@ -128,14 +56,87 @@ export default {
 	},
 	computed: {},
 	created() {
+		this.formConfig = {
+			ref: "exampleTableForm",
+			formCofiguredTo: "add",
+			fields: [
+				{
+					type: "text",
+					label: "GPS Name",
+					placeholder: "GPS Name",
+					key: "name",
+					rules: ["required"],
+				},
+				{
+					type: "text",
+					label: "Code",
+					placeholder: "Code",
+					key: "code",
+					rules: [
+						"required",
+						(v) => (v && v.length <= 8) || "Connection Type Code must be a maximum of 8 characters.",
+					],
+				},
+				{
+					type: "autocomplete",
+					label: "Unit Type",
+					placeholder: "Unit Type",
+					items: ["inches", "mm"],
+					key: "unitType",
+					rules: ["required"],
+					refField: "sizes",
+					disable: false,
+					getDataOfRefField: (type) => this.populateSizes(type),
+					dependency: async function (configObj, formdata) {
+						const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+						// eslint-disable-next-line no-console
+						console.log(this.key, formdata[this.key], formdata)
+						if (formdata[this.key]) {
+							// eslint-disable-next-line no-console
+							console.log("unit type", "not null")
+							dependentObj.disable = false
+							dependentObj.items = await this.getDataOfRefField(formdata[this.key])
+						} else {
+							dependentObj.disable = true
+						}
+						// eslint-disable-next-line no-console
+						console.log("unit type", dependentObj)
+					},
+				},
+				{
+					type: "autocomplete",
+					label: "Pipe sizes available",
+					placeholder: "Pipe sizes available",
+					items: [],
+					key: "sizes",
+					rules: ["required"],
+					refField: "unitType",
+					disable: false,
+					multiple: true,
+					dependency: function (configObj, formdata) {
+						const dependentObj = configObj.fields.find((field) => field.refField === this.key)
+						// eslint-disable-next-line no-console
+						console.log(this.key, formdata[this.key], formdata)
+						if (formdata[this.key] && formdata[this.key].length > 0) {
+							// eslint-disable-next-line no-console
+							console.log("unit type", "not null")
+							dependentObj.disable = true
+						} else {
+							dependentObj.disable = false
+						}
+						// eslint-disable-next-line no-console
+						console.log("unit type", dependentObj)
+					},
+				},
+			],
+		}
+
 		this.initializeTableData({ page: this.page - 1, docsPerPage: this.itemsPerPage })
 	},
 
 	methods: {
 		...mapActions("genericPipeSystems", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("genericPipeSystems", ["getGenericPipeSystems"]),
-		...mapActions("masterPipe", ["fetchAllRecordsMasterPipes"]),
-		...mapGetters("masterPipe", ["getPipeSizes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			const helpers = { configureTableData: this.configureTableData }
 			this.initializeData(this.fetchTableData, this.getGenericPipeSystems, params, helpers)
@@ -144,31 +145,15 @@ export default {
 		},
 		configureTableData(data) {
 			const newData = data.map((eachData) => {
-				if (eachData.unitType === "inches") {
-					const sizesText = eachData.sizes.map((size) => size.imperialText).join(",")
-					const sizes = eachData.sizes.map((size) => ({ id: size._id, value: size.imperialText }))
-					return { ...eachData, sizesText, sizes }
-				} else {
-					const sizesText = eachData.sizes.map((size) => size.metricText).join(",")
-					const sizes = eachData.sizes.map((size) => ({ id: size._id, value: size.metricText }))
-
-					return { ...eachData, sizesText, sizes }
-				}
+				const { sizesText, sizes } = this.generatePizeSizesandSizesText(eachData.unitType, eachData.sizes)
+				return { ...eachData, sizes, sizesText }
 			})
 			return newData
 		},
-
-		async populateSizes(type) {
-			const helper = { params: { unit: type || "mm" } }
-			const sizesData = await this.fetchData(this.fetchAllRecordsMasterPipes, this.getPipeSizes, helper)
-			const updatedData = sizesData.map((data) => ({
-				id: data._id,
-				value: `${type === "mm" ? data.metricText : data.imperialText}`,
-			}))
-			// eslint-disable-next-line no-console
-			console.log("populating sizes", updatedData)
-			return updatedData
+		async assignPopulateSizes(type) {
+			return await this.populateSizes(type)
 		},
+
 		crudFormHelper(item) {
 			// eslint-disable-next-line no-console
 			console.log("from curd form helper", item)
@@ -180,10 +165,6 @@ export default {
 			})
 			return item
 		},
-		// configuerFormData(data) {
-		// 	data.sizes = data.sizesObj
-		// 	return data
-		// },
 	},
 }
 </script>

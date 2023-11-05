@@ -29,7 +29,9 @@ import firstLetterUpperCase from "~/mixins/firstLetterUpperCase.js"
 import generalcrud from "~/mixins/generalcrud.js"
 import tableFormControls from "~/mixins/formControls.js"
 import SnackBar from "~/components/SnackBar.vue"
-import dataFetchHelpers from "~/mixins/dataFetchHelpers"
+import dataFetchHelpers from "~/mixins/dataFetchHelpers.js"
+import countryHelper from "~/mixins/countryHelper.js"
+
 export default {
 	name: "ManufacturerListPage",
 	components: {
@@ -37,7 +39,7 @@ export default {
 		"dynamic-form": DynamicForm,
 		"snack-bar": SnackBar,
 	},
-	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, dataFetchHelpers],
+	mixins: [firstLetterUpperCase, generalcrud, tableFormControls, dataFetchHelpers, countryHelper],
 	data() {
 		return {
 			formConfig: {
@@ -101,8 +103,7 @@ export default {
 	methods: {
 		...mapActions("manufacturer", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
 		...mapGetters("manufacturer", ["getManufacturers"]),
-		...mapActions("country", ["fetchAllRecordsCountries"]),
-		...mapGetters("country", ["getCountries"]),
+
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			const helper = { configureTableData: this.configureTableData }
 			// eslint-disable-next-line no-console
@@ -111,12 +112,7 @@ export default {
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},
-		async getAllCountries() {
-			const helper = { dropdown: "yes" }
-			const data = await this.fetchData(this.fetchAllRecordsCountries, this.getCountries, helper)
-			const updatedData = data.map((country) => ({ id: country._id, value: country.countryRegionCode }))
-			return updatedData
-		},
+
 		async crudFormHelper(item) {
 			const options = await this.getAllCountries()
 			if (typeof item.country === "object") {

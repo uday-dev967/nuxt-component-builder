@@ -29,7 +29,7 @@ export async function fetchAllData(commit, service, mutationTypes, helper) {
 		commit(mutationTypes.setData, response.data)
 		commit(mutationTypes.setTotal, response.data.total)
 		// eslint-disable-next-line no-console
-		console.log("from country store actions", response)
+		console.log("from store actions", response)
 		return { success: true, message: "Data fetched successfully", totalEntries: response.data.total }
 	} catch (error) {
 		return resolveError(error)
