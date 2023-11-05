@@ -31,7 +31,7 @@ export const actions = {
 	fetchTableData({ commit }, params) {
 		return fetchData(commit, ApiService[`get${baseName}`], params, mutationTypes)
 	},
-	fetchAllRecords({ commit }) {
+	[`fetchAllRecords${baseName}`]({ commit }) {
 		return fetchAllData(commit, ApiService[`getAll${baseName}`], mutationTypes)
 	},
 

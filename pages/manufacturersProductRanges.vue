@@ -179,7 +179,6 @@ export default {
 			"updateTableData",
 		]),
 		...mapGetters("manufacturerProductRanges", ["getManufacturerProductRanges"]),
-
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			const helper = { configureTableData: this.configureTableData }
 			// eslint-disable-next-line no-console

@@ -7,6 +7,7 @@
 			:pagination="pagination"
 			:show-form="showForm"
 			:actions="actions"
+			@showFormInput="showFormInput"
 		>
 			<template slot="addForm">
 				<dynamic-form

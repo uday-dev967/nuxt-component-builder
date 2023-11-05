@@ -105,6 +105,11 @@ export default {
 		}
 	},
 	methods: {
+		showFormInput(value) {
+			// eslint-disable-next-line no-console
+			console.log("showing the form control of dialog XXXXXXXXXXXXXXXXXX", value)
+			this.showForm = value
+		},
 		pageChange(val) {
 			// eslint-disable-next-line no-console
 			console.log("onPageChange", val)

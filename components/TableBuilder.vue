@@ -48,7 +48,12 @@
 								<v-icon left>{{ field.icon }}</v-icon>
 								{{ field.action }}
 							</v-btn>
-							<v-dialog v-else-if="field.type === 'slotActivatorBtn'" v-model="dialog" max-width="500px">
+							<v-dialog
+								v-else-if="field.type === 'slotActivatorBtn'"
+								v-model="dialog"
+								max-width="500px"
+								@blur="dialog(false)"
+							>
 								<template #activator="{ on }">
 									<v-btn
 										:disabled="field.disable"
@@ -174,7 +179,7 @@ export default {
 			this.dialog = newValue
 		},
 		dialog(newValue) {
-			this.$emit("input", newValue) // Emitting changes to the parent
+			this.$emit("showFormInput", newValue)
 		},
 	},
 	created() {
