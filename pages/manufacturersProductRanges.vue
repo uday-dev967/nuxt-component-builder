@@ -83,7 +83,7 @@ export default {
 						// { id: 4, title: "cam", subTitle: "USA", value: "cam" },
 					],
 					rules: ["required"],
-					getItems: () => this.getAllManufaturers(),
+					getItems: () => this.getAllManufaturersForAutoComplete(),
 					getDataOfRefField: (type) => this.populateSizes(type),
 					dependency: async function (configObj, formdata) {
 						const items = await this.getItems()
@@ -170,8 +170,6 @@ export default {
 			"updateTableData",
 		]),
 		...mapGetters("manufacturerProductRanges", ["getManufacturerProductRanges"]),
-		...mapActions("manufacturer", ["fetchAllRecordsManufacturers"]),
-		...mapGetters("manufacturer", ["getManufacturers"]),
 
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			const helper = { configureTableData: this.configureTableData }
@@ -181,7 +179,7 @@ export default {
 			// eslint-disable-next-line no-console
 			console.log("response in the table", this.tableConfig.tableData)
 		},
-		async getAllManufaturers() {
+		async getAllManufaturersForAutoComplete() {
 			const helper = { dropdown: "yes" }
 			const data = await this.fetchData(this.fetchAllRecordsManufacturers, this.getManufacturers, helper)
 			const updatedData = data.map((manufacturer) => {
