@@ -4,6 +4,7 @@ import ApiService from "@/services/countryService.js"
 const mutationTypes = {
 	setData: "setCountriesData",
 	setTotal: "setTotalCountries",
+	setCountry: "setCountry",
 }
 
 const baseName = "Countries"
@@ -14,6 +15,7 @@ export const state = () => {
 	return {
 		countriesData: {},
 		totalCountries: 0,
+		country: [],
 	}
 }
 
@@ -23,6 +25,9 @@ export const mutations = {
 	},
 	setTotalCountries(state, totalCountries) {
 		state.totalCountries = totalCountries
+	},
+	setCountry(state, data) {
+		state.country = data
 	},
 }
 export const actions = {
@@ -104,8 +109,5 @@ export const getters = {
 	},
 	getCountryNames(state) {
 		return state.countriesData.countriesData.map((country) => country.countryRegionName)
-	},
-	getCountryById: (state) => (id) => {
-		return state.countiresData.countiresData.find((country) => country.id === id)
 	},
 }

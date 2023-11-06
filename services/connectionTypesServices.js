@@ -7,10 +7,10 @@ export default {
 		console.log("apiClient params get ", params)
 		return servicesHelper.getData(basePath, params)
 	},
-	[`getAll${baseName}`]() {
+	[`getAll${baseName}`](helper) {
 		// eslint-disable-next-line no-console
 		console.log("servicesHelper get all ")
-		return servicesHelper.getAllData(basePath)
+		return servicesHelper.getAllData(basePath, helper)
 	},
 	[`post${baseName}`](data) {
 		// eslint-disable-next-line no-console

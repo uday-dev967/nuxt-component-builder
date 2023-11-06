@@ -33,6 +33,9 @@ import dataFetchHelpers from "~/mixins/dataFetchHelpers.js"
 import pipeSizesHelper from "~/mixins/pipeSizesHelper.js"
 import countryHelper from "~/mixins/countryHelper.js"
 import manufacturerHelper from "~/mixins/manufaturerHelper.js"
+import productTypeHelper from "~/mixins/productTypeHelper.js"
+import connectionTypeHelper from "~/mixins/connectionTypeHelper"
+import materialTypeHelper from "~/mixins/materialTypeHelper"
 export default {
 	name: "ManufacturersProductRangesPage",
 	components: {
@@ -48,6 +51,9 @@ export default {
 		pipeSizesHelper,
 		countryHelper,
 		manufacturerHelper,
+		productTypeHelper,
+		connectionTypeHelper,
+		materialTypeHelper,
 	],
 	data() {
 		return {
@@ -72,7 +78,8 @@ export default {
 		}
 	},
 	computed: {},
-	created() {
+	async created() {
+		await this.getAllCountries()
 		this.formConfig = {
 			ref: "exampleTableForm",
 			formCofiguredTo: "add",
@@ -98,23 +105,23 @@ export default {
 						const items = await this.getItems()
 						// const updatedItems = items.map((item) => "")
 						// eslint-disable-next-line no-console
-						console.log("gettin items in dependency", items)
+						// console.log("gettin items in dependency", items)
 						const dependentObj = configObj.fields.find((field) => field.refField === this.key)
 						// eslint-disable-next-line no-console
-						console.log("forms", this.key, formdata[this.key], formdata)
+						// console.log("forms", this.key, formdata[this.key], formdata)
 						if (formdata[this.key]) {
 							const manufacturer = items.find((item) => item.id === formdata[this.key])
 							formdata[this.key] = manufacturer
 							const type = manufacturer.unitType
 							// eslint-disable-next-line no-console
-							console.log("unit type", type, manufacturer)
+							// console.log("unit type", type, manufacturer)
 							dependentObj.disable = false
 							dependentObj.items = await this.getDataOfRefField(type)
 						} else {
 							dependentObj.disable = true
 						}
 						// eslint-disable-next-line no-console
-						console.log("unit-type", dependentObj)
+						// console.log("unit-type", dependentObj)
 					},
 				},
 				{
@@ -130,26 +137,29 @@ export default {
 					dependency: function (configObj, formdata) {
 						const dependentObj = configObj.fields.find((field) => field.refField === this.key)
 						// eslint-disable-next-line no-console
-						console.log(this.key, formdata[this.key], formdata)
+						// console.log(this.key, formdata[this.key], formdata)
 						if (formdata[this.key] && formdata[this.key].length > 0) {
 							// eslint-disable-next-line no-console
-							console.log("unit type", "not null")
+							// console.log("unit type", "not null")
 							dependentObj.disable = true
 						} else {
 							dependentObj.disable = false
 						}
 						// eslint-disable-next-line no-console
-						console.log("unit type", dependentObj)
+						// console.log("unit type", dependentObj)
 					},
 				},
 				{
 					type: "autocomplete",
-					label: "Connection Type",
-					placeholder: "Connection Type",
+					label: "Product Type",
+					placeholder: "Product Type",
 					items: [],
-					key: "connectionTpe",
+					configurationNeeded: true,
+					getItems: () => this.getAllProductTypesForAutoComplete(),
+					key: "productTypeId",
 					rules: ["required"],
 				},
+
 				{
 					type: "text",
 					label: "Range Name Main",
@@ -164,6 +174,24 @@ export default {
 					placeholder: "Range Name Sub",
 					items: [],
 					key: "rangeNameSub",
+					rules: ["required"],
+				},
+				{
+					type: "autocomplete",
+					label: "Material Type",
+					placeholder: "Material Type",
+					items: [],
+					getItems: () => this.getAllMaterialTypesForAutoComplete(),
+					key: "materialTypeId",
+					rules: ["required"],
+				},
+				{
+					type: "autocomplete",
+					label: "Connection Type",
+					placeholder: "Connection Type",
+					items: [],
+					getItems: () => this.getAllConnetionTypesForAutoComplete(),
+					key: "connectionTypeId",
 					rules: ["required"],
 				},
 			],
@@ -182,22 +210,32 @@ export default {
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			const helper = { configureTableData: this.configureTableData }
 			// eslint-disable-next-line no-console
-			console.log("response in the table", this.tableConfig.tableData)
+			// console.log("response in the table", this.tableConfig.tableData)
 			this.initializeData(this.fetchTableData, this.getManufacturerProductRanges, params, helper)
 			// eslint-disable-next-line no-console
-			console.log("response in the table", this.tableConfig.tableData)
+			// console.log("response in the table", this.tableConfig.tableData)
 		},
 
 		crudFormHelper(item) {
-			// eslint-disable-next-line no-console
-			console.log("from curd form helper", item)
-			item.sizes = item.sizes.map((size) => {
+			// // eslint-disable-next-line no-console
+			// console.log("from curd form helper", item)
+
+			const pipeSizesAvailable = item.sizes.map((size) => {
 				if (typeof size === "object") {
 					return size.id
 				}
 				return size
 			})
-			return item
+			const newItem = {
+				_id: item._id,
+				manufacturer: item.manufacturerId.id,
+				productType: item.productTypeId,
+				materialType: item.materialTypeId,
+				connectionType: item.connectionTypeId,
+				pipeSizesAvailable,
+				rangeName: { sub: item.rangeNameSub, main: item.rangeNameMain },
+			}
+			return newItem
 		},
 		// crudFormHelper(item) {
 		// 	item.compositeCode = `${item.manufacturerCode}_${item.countryCode.value}`
@@ -207,22 +245,25 @@ export default {
 		// },
 		configureTableData(data) {
 			// eslint-disable-next-line no-console
-			console.log("configureing", data)
+			// console.log("configureing", data)
 			const updatedData = data.map((manufaturerProductRange) => {
+				const countryCode = this.getCountryById(manufaturerProductRange.manufacturer.country).countryRegionCode
 				const rangeNameMain = manufaturerProductRange.rangeName.main
 				const rangeNameSub = manufaturerProductRange.rangeName.sub
 				const productTypeMain = manufaturerProductRange.productType.mainCategory
 				const productTypeSub = manufaturerProductRange.productType.subCategory
+				const productTypeId = manufaturerProductRange.productType._id
 				const materialTypeName = manufaturerProductRange.materialType.materialTypeName
 				const connectionTypeName = manufaturerProductRange.connectionType.connectionTypeName
+				const connectionTypeId = manufaturerProductRange.connectionType._id
+				const materialTypeId = manufaturerProductRange.materialType._id
 				const manufacturerName = manufaturerProductRange.manufacturer.manufacturerName
 				const manufacturerId = manufaturerProductRange.manufacturer._id
 				const manufacturerCode = manufaturerProductRange.manufacturer.manufacturerCode
 				const unitType = manufaturerProductRange.manufacturer.unitType
+
 				// const country = { id: manufaturerProductRange.country._id, value: manufaturerProductRange.country.countryRegionCode }
-				const countryCode = this.fetchCountryById(
-					manufaturerProductRange.manufacturer.country
-				).countryRegionCode
+
 				const { sizesText, sizes } = this.generatePizeSizesandSizesText(
 					unitType,
 					manufaturerProductRange.pipeSizesAvailable
@@ -243,10 +284,13 @@ export default {
 					sizesText,
 					sizes,
 					manufacturerId,
+					productTypeId,
+					connectionTypeId,
+					materialTypeId,
 				}
 			})
-			// eslint-disable-next-line no-console
-			console.log("configured", updatedData)
+			// // eslint-disable-next-line no-console
+			// console.log("configured", updatedData)
 			return updatedData
 		},
 	},
