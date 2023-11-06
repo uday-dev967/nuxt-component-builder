@@ -79,7 +79,7 @@ export default {
 
 	methods: {
 		...mapActions("connectionTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
-		...mapGetters("connectionTypes", ["getConnectionTypes", "getTotalConnectionTypes"]),
+		...mapGetters("connectionTypes", ["getConnectionTypes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			this.initializeData(this.fetchTableData, this.getConnectionTypes, params)
 			// eslint-disable-next-line no-console
