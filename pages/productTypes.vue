@@ -91,7 +91,7 @@ export default {
 
 	methods: {
 		...mapActions("productTypes", ["fetchTableData", "addTableData", "deleteTableData", "updateTableData"]),
-		...mapGetters("productTypes", ["getProductTypes", "getTotalProductTypes"]),
+		...mapGetters("productTypes", ["getProductTypes"]),
 		initializeTableData(params = { page: 0, docsPerPage: 10 }) {
 			this.initializeData(this.fetchTableData, this.getProductTypes, params)
 			// eslint-disable-next-line no-console

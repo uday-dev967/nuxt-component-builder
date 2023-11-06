@@ -4,7 +4,7 @@ export default {
 	methods: {
 		...mapActions("materialTypes", ["fetchAllRecordsMaterialType"]),
 		...mapGetters("materialTypes", ["getMaterialType"]),
-		async getAllManufaturersForAutoComplete() {
+		async getAllMaterialTypesForAutoComplete() {
 			const helper = { dropdown: "yes" }
 			const data = await this.fetchData(this.fetchAllRecordsMaterialType, this.getMaterialType, helper)
 			const updatedData = data.map((material) => {
