@@ -1,6 +1,6 @@
 import servicesHelper from "~/services/servicesHelper"
-const basePath = "/commonProductFields"
-const baseName = "CommonProductFields"
+const basePath = "/pipeData"
+const baseName = "PipeData"
 export default {
 	[`get${baseName}`](params = { page: 0, docsPerPage: 10 }) {
 		// eslint-disable-next-line no-console

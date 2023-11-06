@@ -1,8 +1,8 @@
 import { fetchData, deleteItems, fetchAllData, addItem, updateItem } from "./moduleHelper.js"
-import ApiService from "~/services/commonProductFieldsServices.js"
+import ApiService from "~/services/pipeDataServices.js"
 
-const baseName = "CommonProductFields"
-const _baseName = "commonProductFields"
+const baseName = "PipeData"
+const _baseName = "pipeData"
 const mutationTypes = {
 	setData: `set${baseName}Data`,
 	setTotal: `setTotal${baseName}`,

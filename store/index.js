@@ -15,6 +15,7 @@ import * as mechanicalEquipmentParameters from "~/store/modules/mechanicalEquipm
 import * as genericPipeSystems from "~/store/modules/genericPipeSystems.js"
 import * as manufacturer from "~/store/modules/manufacturer.js"
 import * as manufacturerProductRanges from "~/store/modules/manufacturerProductRanges.js"
+import * as pipeData from "~/store/modules/pipeData"
 
 export default {
 	state() {
@@ -41,5 +42,6 @@ export default {
 		genericPipeSystems,
 		manufacturer,
 		manufacturerProductRanges,
+		pipeData,
 	},
 }

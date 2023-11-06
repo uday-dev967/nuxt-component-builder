@@ -58,27 +58,28 @@ export default {
 	data() {
 		return {
 			formConfig: null,
-			tableConfig: {
-				headers: [
-					{ text: "Manufacturer Name", value: "manufacturerName" },
-					{ text: "Country Code", value: "countryCode" },
-					{ text: "Manufacturer Code", value: "manufacturerCode" },
-					{ text: "Product Type-Main", value: "productTypeMain" },
-					{ text: "Product Type-Sub", value: "productTypeSub" },
-					{ text: "Range Name-Main", value: "rangeNameMain" },
-					{ text: "Range Name-Sub", value: "rangeNameSub" },
-					{ text: "Material Type", value: "materialTypeName" },
-					{ text: "Connection Type", value: "connectionTypeName" },
-					{ text: "Unit Type", value: "unitType" },
-					{ text: "Pipe Sizes Available", value: "sizesText" },
-				],
-				tableData: [],
-				totalEntries: 0,
-			},
+			tableConfig: null,
 		}
 	},
 	computed: {},
 	async created() {
+		this.tableConfig = {
+			headers: [
+				{ text: "Manufacturer Name", value: "manufacturerName" },
+				{ text: "Country Code", value: "countryCode" },
+				{ text: "Manufacturer Code", value: "manufacturerCode" },
+				{ text: "Product Type-Main", value: "productTypeMain" },
+				{ text: "Product Type-Sub", value: "productTypeSub" },
+				{ text: "Range Name-Main", value: "rangeNameMain" },
+				{ text: "Range Name-Sub", value: "rangeNameSub" },
+				{ text: "Material Type", value: "materialTypeName" },
+				{ text: "Connection Type", value: "connectionTypeName" },
+				{ text: "Unit Type", value: "unitType" },
+				{ text: "Pipe Sizes Available", value: "sizesText" },
+			],
+			tableData: [],
+			totalEntries: 0,
+		}
 		await this.getAllCountries()
 		this.formConfig = {
 			ref: "exampleTableForm",
@@ -237,12 +238,7 @@ export default {
 			}
 			return newItem
 		},
-		// crudFormHelper(item) {
-		// 	item.compositeCode = `${item.manufacturerCode}_${item.countryCode.value}`
-		// 	item.country = item.countryCode.id
 
-		// 	return item
-		// },
 		configureTableData(data) {
 			// eslint-disable-next-line no-console
 			// console.log("configureing", data)
