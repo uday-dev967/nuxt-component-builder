@@ -2,8 +2,8 @@
 	<div>
 		<v-data-table
 			v-model="localInputData.selected"
-			:headers="localHeader"
-			:items="localTableConfig.tableData"
+			:headers="localHeader.headers"
+			:items="tableConfig.tableData"
 			:page.sync="localInputData.page"
 			item-key="_id"
 			:items-per-page="localInputData.itemsPerPage"
@@ -119,11 +119,15 @@
 <script>
 import _ from "lodash"
 export default {
-	name: "ComplexTableBuilder",
+	name: "TableBuilder",
 	props: {
 		tableConfig: {
 			type: Object,
 			required: true,
+		},
+		tableHeader: {
+			type: Object,
+			default: null,
 		},
 		showForm: {
 			type: Boolean,
@@ -154,25 +158,25 @@ export default {
 				searchInput: "",
 				selected: [],
 			},
-			localHeader: [],
+			localHeader: {},
 		}
 	},
 
 	computed: {
 		getPageCount() {
-			return Math.ceil(this.localTableConfig.totalEntries / (this.localInputData.itemsPerPage || 10))
+			return Math.ceil(this.tableConfig.totalEntries / (this.localInputData.itemsPerPage || 10))
 		},
 		getEntries() {
 			const totalPageEntry = Math.min(
-				this.localTableConfig.totalEntries,
+				this.tableConfig.totalEntries,
 				(this.localInputData.page - 1) * this.localInputData.itemsPerPage + this.localInputData.itemsPerPage
 			)
 
 			return `${
 				this.localInputData.page === 1
-					? Math.min(1, this.localTableConfig.totalEntries)
+					? Math.min(1, this.tableConfig.totalEntries)
 					: (this.localInputData.page - 1) * this.localInputData.itemsPerPage + 1
-			}  to ${totalPageEntry} of ${this.localTableConfig.totalEntries}`
+			}  to ${totalPageEntry} of ${this.tableConfig.totalEntries}`
 		},
 	},
 	watch: {
@@ -183,10 +187,13 @@ export default {
 			this.$emit("showFormInput", newValue)
 		},
 	},
-	created() {
+	async created() {
 		this.$set(this.localInputData, "selected", [])
-		this.localTableConfig = _.cloneDeep(this.tableConfig)
-		this.localHeader = [...this.localTableConfig.headers, { text: "Actions", value: "actions", sortable: false }]
+		this.localHeader = _.cloneDeep(this.tableHeader)
+		if (this.localHeader.getHeaders) {
+			this.localHeader.headers = await this.localHeader.getHeaders()
+		}
+		this.localHeader.headers = [...this.localHeader.headers, { text: "Actions", value: "actions", sortable: false }]
 	},
 	methods: {
 		getDisable(field) {
