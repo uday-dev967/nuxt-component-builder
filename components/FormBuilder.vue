@@ -271,6 +271,10 @@ export default {
 			type: Object,
 			required: true,
 		},
+		getFields: {
+			type: Function,
+			default: null,
+		},
 		data: {
 			type: Object,
 			default() {
@@ -322,8 +326,11 @@ export default {
 			return false
 		},
 	},
-	created() {
+	async created() {
 		this.config = _.cloneDeep(this.formConfig)
+		if (this.getFields) {
+			this.config.fields = await this.getFields()
+		}
 		this.config.fields.forEach(async (field) => {
 			if (field.type === "autocomplete") {
 				if (field.getItems) {
